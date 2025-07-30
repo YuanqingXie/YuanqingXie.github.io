@@ -15,9 +15,6 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/DRACOLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/RGBELoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/pmrem/PMREMCubeUVPacker.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/pmrem/PMREMGenerator.js"></script>
     
     <style>
         :root {
@@ -26,6 +23,7 @@
             --gray: #777;
             --light-gray: #eee;
             --white: #fff;
+            --black: #000;
         }
         
         * {
@@ -36,10 +34,32 @@
         }
         
         body {
-            background-color: var(--white);
-            color: var(--dark);
+            background-color: var(--black);
+            color: var(--white);
             overflow-x: hidden;
             line-height: 1.6;
+        }
+        
+        /* Video Background */
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1;
         }
         
         /* Navigation Bar */
@@ -52,8 +72,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 5%;
-            background: var(--white);
-            border-bottom: 1px solid var(--light-gray);
+            background: transparent;
             z-index: 1000;
         }
         
@@ -71,7 +90,7 @@
         .site-title {
             font-size: 1.2rem;
             font-weight: 600;
-            color: var(--dark);
+            color: var(--white);
         }
         
         .nav-links {
@@ -82,14 +101,14 @@
         
         .nav-links a {
             text-decoration: none;
-            color: var(--dark);
+            color: var(--white);
             font-weight: 500;
             font-size: 0.95rem;
             transition: color 0.3s;
         }
         
         .nav-links a:hover {
-            color: var(--primary);
+            color: var(--light-gray);
         }
         
         /* Language Toggle */
@@ -101,7 +120,7 @@
         .language-btn {
             background: none;
             border: none;
-            color: var(--dark);
+            color: var(--white);
             font-weight: 500;
             font-size: 0.95rem;
             cursor: pointer;
@@ -114,21 +133,21 @@
         }
         
         .language-btn:hover {
-            background: rgba(0,0,0,0.05);
+            background: rgba(255,255,255,0.1);
         }
         
         .language-dropdown {
             position: absolute;
             top: 100%;
             left: 0;
-            background: var(--white);
+            background: var(--black);
             border-radius: 4px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
             display: none;
             flex-direction: column;
             min-width: 120px;
             z-index: 1001;
-            border: 1px solid var(--light-gray);
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         .language-toggle:hover .language-dropdown,
@@ -139,14 +158,19 @@
         .language-option {
             padding: 8px 12px;
             text-align: left;
-            color: var(--dark);
+            color: var(--white);
             text-decoration: none;
             transition: background 0.2s;
             cursor: pointer;
         }
         
         .language-option:hover {
-            background: var(--light-gray);
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .language-option.active {
+            background: rgba(255,255,255,0.2);
+            font-weight: 600;
         }
         
         /* Mobile Menu Button */
@@ -155,7 +179,7 @@
             background: none;
             border: none;
             font-size: 1.5rem;
-            color: var(--dark);
+            color: var(--white);
             cursor: pointer;
             padding: 5px;
         }
@@ -166,13 +190,14 @@
             top: 70px;
             left: 0;
             width: 100%;
-            background: var(--white);
+            background: var(--black);
             padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             z-index: 999;
             display: none;
             flex-direction: column;
             gap: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
         
         .mobile-menu.show {
@@ -182,9 +207,9 @@
         .mobile-menu a {
             padding: 10px;
             text-decoration: none;
-            color: var(--dark);
+            color: var(--white);
             font-weight: 500;
-            border-bottom: 1px solid var(--light-gray);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         
         /* Hero Section */
@@ -194,22 +219,12 @@
             align-items: center;
             position: relative;
             padding-top: 80px;
-        }
-        
-        .hero-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 0;
-            filter: brightness(0.7);
+            background: #111;
         }
         
         .hero-content {
             position: relative;
-            z-index: 1;
+            z-index: 2;
             display: flex;
             width: 100%;
             max-width: 1200px;
@@ -222,139 +237,141 @@
             flex: 2;
         }
         
-        .hero-skills {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding-left: 50px;
-        }
-        
         .hero h1 {
             font-size: 3rem;
             margin-bottom: 25px;
             line-height: 1.2;
             font-weight: 600;
+            display: none;
         }
         
-        .hero p {
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-            max-width: 600px;
-            text-align: left;
+        .hero h1.active {
+            display: block;
         }
         
-        .hero-btns {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 10px 25px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-            border: none;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: var(--white);
-        }
-        
-        .btn-primary:hover {
-            background: #444;
-        }
-        
-        .btn-outline {
-            background: rgba(255,255,255,0.1);
-            color: var(--white);
-        }
-        
-        .btn-outline:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        .skill-tag {
-            color: var(--white);
-            font-weight: 500;
-            font-size: 1rem;
-            text-align: right;
-        }
-        
-        /* Portfolio Section */
-        .portfolio-section {
-            padding: 100px 5%;
-            background: var(--white);
+        /* Projects Section */
+        .projects-section {
+            padding: 100px 5px;
+            background: var(--black);
         }
         
         .section-header {
             text-align: center;
             margin-bottom: 60px;
+            padding: 0 5%;
         }
         
         .section-header h2 {
             font-size: 2.2rem;
             margin-bottom: 15px;
-            color: var(--dark);
+            color: var(--white);
             position: relative;
             display: inline-block;
-        }
-        
-        .portfolio-section .section-header h2::after {
             display: none;
         }
         
+        .section-header h2.active {
+            display: block;
+        }
+        
         .section-header p {
-            font-size: 1.1rem;
-            max-width: 700px;
-            margin: 30px auto 0;
-            color: var(--gray);
+            display: none;
+        }
+        
+        .section-header p.active {
+            display: block;
         }
         
         /* Projects */
         .projects-container {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
         }
         
         .project-item {
-            display: flex;
-            gap: 50px;
             margin-bottom: 100px;
-            align-items: center;
-        }
-        
-        .project-item:nth-child(even) {
-            flex-direction: row-reverse;
         }
         
         .project-image {
-            flex: 1;
-            height: 400px;
+            width: calc(100% - 10px);
+            height: 500px;
             position: relative;
             overflow: hidden;
             border-radius: 5px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin: 0 5px;
+        }
+        
+        .project-image:hover .project-info-overlay {
+            opacity: 1;
+        }
+        
+        .project-info-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+        }
+        
+        .project-info-overlay h3 {
+            color: var(--white);
+            font-size: 2rem;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .project-info-overlay h3.active {
+            display: block;
+        }
+        
+        .project-info-overlay p {
+            color: var(--gray);
+            margin-bottom: 20px;
+            line-height: 1.6;
+            max-width: 800px;
+            display: none;
+        }
+        
+        .project-info-overlay p.active {
+            display: block;
+        }
+        
+        .project-info-overlay .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .project-info-overlay .tag {
+            background: rgba(85,85,85,0.2);
+            color: var(--white);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
         
         /* 3D Viewer Styles */
-        #sgb-viewer-container {
+        .model-viewer-container {
             position: relative;
-            width: 100%;
-            height: 400px;
-            background: #f0f0f0;
+            width: calc(100% - 10px);
+            height: 500px;
+            background: #1a1a1a;
             border-radius: 5px;
             overflow: hidden;
+            margin: 0 5px;
         }
         
-        #sgb-viewer-container canvas {
+        .model-viewer-container canvas {
             display: block;
             width: 100%;
             height: 100%;
@@ -369,9 +386,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(240,240,240,0.8);
+            background: rgba(26,26,26,0.8);
             z-index: 10;
-            color: var(--dark);
+            color: var(--white);
         }
         
         .model-error {
@@ -386,8 +403,8 @@
             justify-content: center;
             text-align: center;
             padding: 20px;
-            background: #f0f0f0;
-            color: #d33;
+            background: #1a1a1a;
+            color: #ff5555;
         }
         
         .model-error button {
@@ -400,61 +417,45 @@
             cursor: pointer;
         }
         
-        .project-info {
-            flex: 1;
-        }
-        
-        .project-info h3 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            color: var(--dark);
-        }
-        
-        .project-info .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .tag {
-            background: rgba(85,85,85,0.1);
-            color: var(--primary);
-            padding: 5px 12px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        
-        .project-info p {
-            color: var(--gray);
-            margin-bottom: 25px;
-            line-height: 1.8;
-            text-align: left;
-        }
-        
-        .project-btns {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
         /* About Section */
         .about-section {
             padding: 100px 5%;
-            background: var(--light-gray);
+            background: #4d4d4d;
+            position: relative;
+        }
+        
+        .about-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('assets/portrait.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 1;
+            z-index: 0;
         }
         
         .about-content {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
         
         .about-content h2 {
             font-size: 2.2rem;
             margin-bottom: 40px;
-            color: var(--dark);
+            color: var(--white);
             text-align: center;
+            display: none;
+        }
+        
+        .about-content h2.active {
+            display: block;
         }
         
         .about-grid {
@@ -464,10 +465,15 @@
         }
         
         .about-text p {
-            color: var(--gray);
+            color: var(--white);
             margin-bottom: 20px;
             line-height: 1.8;
             text-align: left;
+            display: none;
+        }
+        
+        .about-text p.active {
+            display: block;
         }
         
         .skills {
@@ -477,15 +483,16 @@
         }
         
         .skill-item {
-            background: var(--white);
+            background: rgba(26,26,26,0.8);
             padding: 25px;
             border-radius: 5px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
         }
         
         .skill-item h4 {
             margin-bottom: 15px;
-            color: var(--primary);
+            color: var(--white);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -496,10 +503,18 @@
             font-size: 1.3rem;
         }
         
+        .skill-item p {
+            display: none;
+        }
+        
+        .skill-item p.active {
+            display: block;
+        }
+        
         /* Contact Section */
         .contact-section {
             padding: 100px 5%;
-            background: var(--white);
+            background: var(--black);
             text-align: center;
         }
         
@@ -513,7 +528,7 @@
         }
         
         .contact-card {
-            background: var(--light-gray);
+            background: #1a1a1a;
             padding: 30px;
             border-radius: 5px;
             width: 250px;
@@ -532,16 +547,26 @@
         
         .contact-card h3 {
             margin-bottom: 10px;
-            color: var(--dark);
+            color: var(--white);
+            display: none;
+        }
+        
+        .contact-card h3.active {
+            display: block;
         }
         
         .contact-card p {
             color: var(--gray);
+            display: none;
+        }
+        
+        .contact-card p.active {
+            display: block;
         }
         
         /* Footer */
         footer {
-            background: var(--dark);
+            background: #111;
             color: var(--white);
             padding: 60px 5% 30px;
             text-align: center;
@@ -596,10 +621,9 @@
             font-size: 0.9rem;
         }
         
-        /* Download Portfolio Button */
-        .download-portfolio-btn {
-            text-align: center;
-            margin-top: 50px;
+        /* Language Transition Styles */
+        .language-transition {
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
         
         /* Responsive Design */
@@ -607,40 +631,15 @@
             .hero h1 {
                 font-size: 2.5rem;
             }
-            
-            .hero-skills {
-                padding-left: 30px;
-            }
         }
         
         @media (max-width: 992px) {
-            .project-item, .project-item:nth-child(even) {
-                flex-direction: column;
-            }
-            
-            .project-image {
-                width: 100%;
-            }
-            
             .about-grid {
                 grid-template-columns: 1fr;
             }
             
-            .hero-content {
-                flex-direction: column;
-            }
-            
-            .hero-text {
-                margin-bottom: 40px;
-            }
-            
-            .hero-skills {
-                padding-left: 0;
-                align-items: flex-start;
-            }
-            
-            .skill-tag {
-                text-align: left;
+            .skills {
+                grid-template-columns: 1fr;
             }
         }
         
@@ -667,22 +666,15 @@
                 font-size: 1.8rem;
             }
             
-            .project-btns {
-                flex-direction: column;
-            }
-            
-            .skills {
-                grid-template-columns: 1fr;
+            .project-image,
+            .model-viewer-container {
+                height: 400px;
             }
         }
         
         @media (max-width: 576px) {
             .hero h1 {
                 font-size: 1.8rem;
-            }
-            
-            .hero p {
-                font-size: 1rem;
             }
             
             .btn {
@@ -692,6 +684,19 @@
             
             .contact-card {
                 width: 100%;
+            }
+            
+            .project-image,
+            .model-viewer-container {
+                height: 300px;
+            }
+            
+            .project-info-overlay {
+                padding: 20px;
+            }
+            
+            .project-info-overlay h3 {
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -715,10 +720,10 @@
                     <div class="language-option" data-lang="zh">中文</div>
                 </div>
             </div>
-            <a href="#home" data-en="Home" data-de="Startseite" data-zh="首页">Home</a>
-            <a href="#portfolio" data-en="Portfolio" data-de="Portfolio" data-zh="作品集">Portfolio</a>
-            <a href="#about" data-en="About" data-de="Über mich" data-zh="关于">About</a>
-            <a href="#contact" data-en="Contact" data-de="Kontakt" data-zh="联系">Contact</a>
+            <a href="#home" data-i18n="home">Home</a>
+            <a href="#projects" data-i18n="projects">Projects</a>
+            <a href="#about" data-i18n="about">About</a>
+            <a href="#contact" data-i18n="contact">Contact</a>
         </div>
         
         <button class="mobile-menu-btn" id="mobile-menu-btn">
@@ -728,97 +733,60 @@
     
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobile-menu">
-        <a href="#home" data-en="Home" data-de="Startseite" data-zh="首页">Home</a>
-        <a href="#portfolio" data-en="Portfolio" data-de="Portfolio" data-zh="作品集">Portfolio</a>
-        <a href="#about" data-en="About" data-de="Über mich" data-zh="关于">About</a>
-        <a href="#contact" data-en="Contact" data-de="Kontakt" data-zh="联系">Contact</a>
+        <a href="#home" data-i18n="home">Home</a>
+        <a href="#projects" data-i18n="projects">Projects</a>
+        <a href="#about" data-i18n="about">About</a>
+        <a href="#contact" data-i18n="contact">Contact</a>
     </div>
 
-    <!-- Hero Section -->
+    <!-- Hero Section with Video Background -->
     <section class="hero" id="home">
-        <img src="assets/portrait.jpg" alt="Yuanqing Xie" class="hero-image">
+        <video autoplay muted loop playsinline class="hero-video">
+            <source src="assets/tractor_1920x802_low.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
         <div class="hero-content">
             <div class="hero-text">
-                <h1 data-en="Innovative Design · Technology Integration · User Experience"
-                    data-de="Innovatives Design · Technologieintegration · Benutzererfahrung"
-                    data-zh="创新设计 · 技术整合 · 用户体验">
-                    Innovative Design · Technology Integration · User Experience
-                </h1>
-                <p data-en="I am Yuanqing Xie, a multidisciplinary designer combining industrial design, UI/UX, 3D real-time rendering and AI technologies. I focus on creating solutions that blend aesthetics and functionality, connecting people with technology through design."
-                   data-de="Ich bin Yuanqing Xie, ein multidisziplinärer Designer, der Industriedesign, UI/UX, 3D-Echtzeit-Rendering und KI-Technologien kombiniert. Ich konzentriere mich auf die Erstellung von Lösungen, die Ästhetik und Funktionalität verbinden und Menschen durch Design mit Technologie verbinden."
-                   data-zh="我是谢原卿，一位结合工业设计、UI/UX、3D实时渲染和AI技术的多学科设计师。我专注于创造融合美学与功能的解决方案，通过设计连接人与技术。">
-                    I am Yuanqing Xie, a multidisciplinary designer combining industrial design, UI/UX, 3D real-time rendering and AI technologies. I focus on creating solutions that blend aesthetics and functionality, connecting people with technology through design.
-                </p>
-                <div class="hero-btns">
-                    <a href="#portfolio" class="btn btn-primary">
-                        <i class="fas fa-briefcase"></i> <span data-en="View Portfolio" data-de="Portfolio ansehen" data-zh="查看作品集">View Portfolio</span>
-                    </a>
-                    <a href="#" class="btn btn-outline">
-                        <i class="fas fa-download"></i> <span data-en="Download CV (PDF)" data-de="Lebenslauf herunterladen (PDF)" data-zh="下载简历 (PDF)">Download CV (PDF)</span>
-                    </a>
-                </div>
-            </div>
-            
-            <div class="hero-skills">
-                <div class="skill-tag" data-en="Industrial Design" data-de="Industriedesign" data-zh="工业设计">Industrial Design</div>
-                <div class="skill-tag" data-en="3D Real-time Rendering" data-de="3D-Echtzeit-Rendering" data-zh="3D实时渲染">3D Real-time Rendering</div>
-                <div class="skill-tag" data-en="Graphic Design" data-de="Grafikdesign" data-zh="平面设计">Graphic Design</div>
-                <div class="skill-tag" data-en="UI/UX Design" data-de="UI/UX Design" data-zh="UI/UX设计">UI/UX Design</div>
-                <div class="skill-tag" data-en="Web Design" data-de="Webdesign" data-zh="网页设计">Web Design</div>
-                <div class="skill-tag" data-en="AI Technology" data-de="KI-Technologie" data-zh="AI技术">AI Technology</div>
-                <div class="skill-tag" data-en="Video Creator" data-de="Videoproduktion" data-zh="视频创作">Video Creator</div>
+                <h1 lang="en" class="active">Innovative Design · Technology Integration · User Experience</h1>
+                <h1 lang="de">Innovatives Design · Technologieintegration · Benutzererlebnis</h1>
+                <h1 lang="zh">创新设计 · 技术整合 · 用户体验</h1>
             </div>
         </div>
     </section>
 
-    <!-- Portfolio Section -->
-    <section class="portfolio-section" id="portfolio">
-        <div class="section-header">
-            <h2 data-en="Portfolio" data-de="Portfolio" data-zh="作品集">Portfolio</h2>
-            <p data-en="Selected works showcasing my multidisciplinary design approach"
-               data-de="Ausgewählte Arbeiten, die meinen multidisziplinären Designansatz zeigen"
-               data-zh="精选作品展示我的多学科设计方法">
-                Selected works showcasing my multidisciplinary design approach
-            </p>
-        </div>
-        
+    <!-- Projects Section -->
+    <section class="projects-section" id="projects">
         <div class="projects-container">
             <!-- Project 1: SmartGestureBox with 3D Model -->
             <div class="project-item">
-                <div class="project-image" id="sgb-viewer-container">
-                    <div class="model-loading">
-                        <div>
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Loading 3D model...</p>
+                <div class="project-image">
+                    <div class="model-viewer-container" id="sgb-viewer-container">
+                        <div class="model-loading">
+                            <div>
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p data-i18n="loading_model">Loading 3D model...</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="project-info">
-                    <h3>SmartGestureBox</h3>
-                    <div class="tags">
-                        <span class="tag" data-en="Machine Learning" data-de="Maschinelles Lernen" data-zh="机器学习">Machine Learning</span>
-                        <span class="tag" data-en="Human-Computer Interaction" data-de="Mensch-Computer-Interaktion" data-zh="人机交互">Human-Computer Interaction</span>
-                        <span class="tag">Python</span>
-                        <span class="tag">YOLO V5</span>
-                    </div>
-                    <p data-en="An innovative machine learning application that controls computer operations through gesture recognition. The system uses YOLO V5 algorithm for gesture recognition and tracking, supporting operations within a 4-meter range and effectively reducing repetitive muscle strain."
-                       data-de="Eine innovative Machine-Learning-Anwendung, die Computeroperationen durch Gestenerkennung steuert. Das System verwendet den YOLO V5-Algorithmus zur Gestenerkennung und -verfolgung, unterstützt Operationen innerhalb eines 4-Meter-Bereichs und reduziert effektiv wiederholte Muskelbelastungen."
-                       data-zh="一个创新的机器学习应用程序，通过手势识别控制计算机操作。该系统使用YOLO V5算法进行手势识别和跟踪，支持4米范围内的操作，有效减少重复性肌肉劳损。">
-                        An innovative machine learning application that controls computer operations through gesture recognition. The system uses YOLO V5 algorithm for gesture recognition and tracking, supporting operations within a 4-meter range and effectively reducing repetitive muscle strain.
-                    </p>
-                    <p data-en="The design process included: user research, gesture design, machine learning model training, 3D modeling and prototyping. The final product features an aluminum alloy shell with ABS support plate inside, ensuring structural strength and heat dissipation."
-                       data-de="Der Designprozess umfasste: Nutzerforschung, Gestendesign, Training von Machine-Learning-Modellen, 3D-Modellierung und Prototyping. Das Endprodukt verfügt über ein Gehäuse aus Aluminiumlegierung mit einer ABS-Stützplatte im Inneren, das strukturelle Festigkeit und Wärmeableitung gewährleistet."
-                       data-zh="设计过程包括：用户研究、手势设计、机器学习模型训练、3D建模和原型制作。最终产品采用铝合金外壳，内部带有ABS支撑板，确保结构强度和散热。">
-                        The design process included: user research, gesture design, machine learning model training, 3D modeling and prototyping. The final product features an aluminum alloy shell with ABS support plate inside, ensuring structural strength and heat dissipation.
-                    </p>
-                    
-                    <div class="project-btns">
-                        <a href="#" class="btn btn-primary">
-                            <i class="fas fa-eye"></i> <span data-en="View Details" data-de="Details anzeigen" data-zh="查看详情">View Details</span>
-                        </a>
-                        <a href="#" class="btn btn-outline" id="rotate-toggle-btn">
-                            <i class="fas fa-rotate"></i> <span data-en="Auto Rotate" data-de="Auto-Rotation" data-zh="自动旋转">Auto Rotate</span>
-                        </a>
+                    <div class="project-info-overlay">
+                        <h3 lang="en" class="active">Smart Gesture Box</h3>
+                        <h3 lang="de">Smart Gesture Box</h3>
+                        <h3 lang="zh">智能手势控制盒</h3>
+                        <p lang="en" class="active">
+                            An innovative machine learning application that controls computer operations through gesture recognition. The system uses YOLO V5 algorithm for gesture recognition and tracking, supporting operations within a 4-meter range and effectively reducing repetitive muscle strain.
+                        </p>
+                        <p lang="de">
+                            Eine innovative Machine-Learning-Anwendung, die Computeroperationen durch Gestenerkennung steuert. Das System verwendet den YOLO V5-Algorithmus zur Gestenerkennung und -verfolgung, unterstützt Operationen innerhalb eines 4-Meter-Bereichs und reduziert effektiv repetitive Muskelbelastungen.
+                        </p>
+                        <p lang="zh">
+                            一款通过手势识别控制计算机操作的创新机器学习应用。该系统使用YOLO V5算法进行手势识别和跟踪，支持4米范围内的操作，有效减少重复性肌肉劳损。
+                        </p>
+                        <div class="tags">
+                            <span class="tag">Machine Learning</span>
+                            <span class="tag">Human-Computer Interaction</span>
+                            <span class="tag">Python</span>
+                            <span class="tag">YOLO V5</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -826,31 +794,33 @@
             <!-- Project 2: Concept Tractor & Trailer -->
             <div class="project-item">
                 <div class="project-image">
-                    <img src="https://via.placeholder.com/800x500" alt="Concept Tractor & Trailer">
-                </div>
-                <div class="project-info">
-                    <h3 data-en="Concept Tractor & Trailer Design" data-de="Konzept Traktor & Anhänger Design" data-zh="概念拖拉机与拖车设计">Concept Tractor & Trailer Design</h3>
-                    <div class="tags">
-                        <span class="tag" data-en="Transportation Design" data-de="Transportdesign" data-zh="交通工具设计">Transportation Design</span>
-                        <span class="tag" data-en="Sustainability" data-de="Nachhaltigkeit" data-zh="可持续性">Sustainability</span>
-                        <span class="tag" data-en="GPS Navigation" data-de="GPS-Navigation" data-zh="GPS导航">GPS Navigation</span>
-                        <span class="tag" data-en="Automation" data-de="Automatisierung" data-zh="自动化">Automation</span>
+                    <div class="model-viewer-container" id="tractor-viewer-container">
+                        <div class="model-loading">
+                            <div>
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p data-i18n="loading_model">Loading 3D model...</p>
+                            </div>
+                        </div>
                     </div>
-                    <p data-en="A conceptual tractor and autonomous trailer system designed to address labor shortages and environmental challenges caused by China's rapid urbanization and aging population. Integrates GPS navigation, autonomous driving and multifunctional operation capabilities."
-                       data-de="Ein konzeptionelles Traktor- und autonomes Anhängersystem, das entwickelt wurde, um Arbeitskräftemangel und Umweltprobleme aufgrund der raschen Urbanisierung und alternden Bevölkerung in China zu bewältigen. Integriert GPS-Navigation, autonomes Fahren und multifunktionale Betriebsfähigkeiten."
-                       data-zh="为解决中国快速城市化和人口老龄化导致的劳动力短缺和环境挑战而设计的概念拖拉机与自主拖车系统。集成了GPS导航、自动驾驶和多功能操作能力。">
-                        A conceptual tractor and autonomous trailer system designed to address labor shortages and environmental challenges caused by China's rapid urbanization and aging population. Integrates GPS navigation, autonomous driving and multifunctional operation capabilities.
-                    </p>
-                    <p data-en="Design features include: slanted hood to reduce blind spots, high-visibility red and gold color scheme, modular trailer system. The trailer can navigate autonomously to destinations, detecting obstacles through sensors and stopping automatically."
-                       data-de="Designmerkmale umfassen: geneigte Motorhaube zur Reduzierung toter Winkel, hochsichtbares rot-goldenes Farbschema, modulares Anhängersystem. Der Anhänger kann autonom zu Zielen navigieren, Hindernisse durch Sensoren erkennen und automatisch anhalten."
-                       data-zh="设计特点包括：倾斜的引擎盖减少盲区、高可见度的红金配色方案、模块化拖车系统。拖车可以自主导航到目的地，通过传感器检测障碍物并自动停止。">
-                        Design features include: slanted hood to reduce blind spots, high-visibility red and gold color scheme, modular trailer system. The trailer can navigate autonomously to destinations, detecting obstacles through sensors and stopping automatically.
-                    </p>
-                    
-                    <div class="project-btns">
-                        <a href="#" class="btn btn-primary">
-                            <i class="fas fa-eye"></i> <span data-en="View Details" data-de="Details anzeigen" data-zh="查看详情">View Details</span>
-                        </a>
+                    <div class="project-info-overlay">
+                        <h3 lang="en" class="active">Concept Tractor & Trailer Design</h3>
+                        <h3 lang="de">Konzept Traktor & Anhänger Design</h3>
+                        <h3 lang="zh">概念拖拉机与拖车设计</h3>
+                        <p lang="en" class="active">
+                            A conceptual tractor and autonomous trailer system designed to address labor shortages and environmental challenges caused by China's rapid urbanization and aging population. Integrates GPS navigation, autonomous driving and multifunctional operation capabilities.
+                        </p>
+                        <p lang="de">
+                            Ein konzeptionelles Traktor- und autonomes Anhängersystem, das entwickelt wurde, um Arbeitskräftemangel und Umweltprobleme zu bewältigen, die durch Chinas schnelle Urbanisierung und alternde Bevölkerung verursacht werden. Integriert GPS-Navigation, autonomes Fahren und multifunktionale Betriebsfähigkeiten.
+                        </p>
+                        <p lang="zh">
+                            为解决中国快速城市化和人口老龄化导致的劳动力短缺和环境挑战而设计的概念拖拉机与自主拖车系统。集成了GPS导航、自动驾驶和多功能操作能力。
+                        </p>
+                        <div class="tags">
+                            <span class="tag">Transportation Design</span>
+                            <span class="tag">Sustainability</span>
+                            <span class="tag">GPS Navigation</span>
+                            <span class="tag">Automation</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -859,193 +829,101 @@
             <div class="project-item">
                 <div class="project-image">
                     <img src="https://via.placeholder.com/800x500" alt="Beckhoff Design">
-                </div>
-                <div class="project-info">
-                    <h3 data-en="Beckhoff Automation Solutions" data-de="Beckhoff Automatisierungslösungen" data-zh="Beckhoff自动化解决方案">Beckhoff Automation Solutions</h3>
-                    <div class="tags">
-                        <span class="tag" data-en="Industrial Design" data-de="Industriedesign" data-zh="工业设计">Industrial Design</span>
-                        <span class="tag" data-en="3D Rendering" data-de="3D-Rendering" data-zh="3D渲染">3D Rendering</span>
-                        <span class="tag" data-en="Animation Design" data-de="Animationsdesign" data-zh="动画设计">Animation Design</span>
-                        <span class="tag" data-en="Product Design" data-de="Produktdesign" data-zh="产品设计">Product Design</span>
-                    </div>
-                    <p data-en="Industrial automation product series designed for Beckhoff Automation, including ultra-compact industrial PC C6030, modular automation system MX-System, etc. The project covered product design, 3D rendering and animation presentation."
-                       data-de="Industrieautomatisierungsproduktserie für Beckhoff Automation, darunter der ultra-kompakte Industrie-PC C6030, das modulare Automatisierungssystem MX-System usw. Das Projekt umfasste Produktdesign, 3D-Rendering und Animationspräsentation."
-                       data-zh="为Beckhoff Automation设计的工业自动化产品系列，包括超紧凑型工业PC C6030、模块化自动化系统MX-System等。项目涵盖产品设计、3D渲染和动画演示。">
-                        Industrial automation product series designed for Beckhoff Automation, including ultra-compact industrial PC C6030, modular automation system MX-System, etc. The project covered product design, 3D rendering and animation presentation.
-                    </p>
-                    <p data-en="The design concept emphasizes simplicity, functionality and industrial aesthetics, with all products following a unified design language to ensure brand consistency. Used Cinema4D for high-quality rendering and KeyShot for real-time visualization."
-                       data-de="Das Designkonzept betont Einfachheit, Funktionalität und industrielle Ästhetik, wobei alle Produkte einer einheitlichen Designsprache folgen, um Markenkonsistenz zu gewährleisten. Verwendet Cinema4D für hochwertiges Rendering und KeyShot für Echtzeitvisualisierung."
-                       data-zh="设计理念强调简洁性、功能性和工业美学，所有产品遵循统一的设计语言以确保品牌一致性。使用Cinema4D进行高质量渲染，KeyShot进行实时可视化。">
-                        The design concept emphasizes simplicity, functionality and industrial aesthetics, with all products following a unified design language to ensure brand consistency. Used Cinema4D for high-quality rendering and KeyShot for real-time visualization.
-                    </p>
-                    
-                    <div class="project-btns">
-                        <a href="#" class="btn btn-primary">
-                            <i class="fas fa-eye"></i> <span data-en="View Details" data-de="Details anzeigen" data-zh="查看详情">View Details</span>
-                        </a>
+                    <div class="project-info-overlay">
+                        <h3 lang="en" class="active">Beckhoff Automation Solutions</h3>
+                        <h3 lang="de">Beckhoff Automatisierungslösungen</h3>
+                        <h3 lang="zh">Beckhoff自动化解决方案</h3>
+                        <p lang="en" class="active">
+                            Industrial automation product series designed for Beckhoff Automation, including ultra-compact industrial PC C6030, modular automation system MX-System, etc. The project covered product design, 3D rendering and animation presentation.
+                        </p>
+                        <p lang="de">
+                            Industrielle Automatisierungsproduktserie für Beckhoff Automation, inklusive ultra-kompakter Industrie-PC C6030, modulares Automatisierungssystem MX-System usw. Das Projekt umfasste Produktdesign, 3D-Rendering und Animationspräsentation.
+                        </p>
+                        <p lang="zh">
+                            为Beckhoff Automation设计的工业自动化产品系列，包括超紧凑型工业PC C6030、模块化自动化系统MX-System等。项目涵盖产品设计、3D渲染和动画展示。
+                        </p>
+                        <div class="tags">
+                            <span class="tag">Industrial Design</span>
+                            <span class="tag">3D Rendering</span>
+                            <span class="tag">Animation Design</span>
+                            <span class="tag">Product Design</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Project 4: Arbeitsbock -->
-            <div class="project-item">
-                <div class="project-image">
-                    <img src="https://via.placeholder.com/800x500" alt="Arbeitsbock">
-                </div>
-                <div class="project-info">
-                    <h3 data-en="Arbeitsbock Workbench System" data-de="Arbeitsbock Werkbanksystem" data-zh="Arbeitsbock工作台系统">Arbeitsbock Workbench System</h3>
-                    <div class="tags">
-                        <span class="tag" data-en="Product Design" data-de="Produktdesign" data-zh="产品设计">Product Design</span>
-                        <span class="tag" data-en="Modular" data-de="Modular" data-zh="模块化">Modular</span>
-                        <span class="tag" data-en="Ergonomics" data-de="Ergonomie" data-zh="人体工程学">Ergonomics</span>
-                        <span class="tag" data-en="Festool Collaboration" data-de="Festool Zusammenarbeit" data-zh="Festool合作">Festool Collaboration</span>
-                    </div>
-                    <p data-en="A transformable workbench system developed in collaboration with Festool, supporting multiple work scenarios. The system includes three design concepts: Strongman, Transformer and Knick Knack, each addressing different user needs."
-                       data-de="Ein transformierbares Werkbanksystem, das in Zusammenarbeit mit Festool entwickelt wurde und mehrere Arbeitsszenarien unterstützt. Das System umfasst drei Designkonzepte: Strongman, Transformer und Knick Knack, die jeweils unterschiedliche Benutzerbedürfnisse ansprechen."
-                       data-zh="与Festool合作开发的可变形工作台系统，支持多种工作场景。该系统包括三个设计概念：Strongman、Transformer和Knick Knack，每个概念针对不同的用户需求。">
-                        A transformable workbench system developed in collaboration with Festool, supporting multiple work scenarios. The system includes three design concepts: Strongman, Transformer and Knick Knack, each addressing different user needs.
-                    </p>
-                    <p data-en="Technical features: height adjustable (50-120cm), load capacity 150kg+, foldable design for easy transport. Uses aluminum alloy frame and MDF panels, combined with Festool's modular system to provide flexible work solutions."
-                       data-de="Technische Merkmale: höhenverstellbar (50-120 cm), Tragfähigkeit 150 kg+, faltbares Design für einfachen Transport. Verwendet Rahmen aus Aluminiumlegierung und MDF-Platten, kombiniert mit Festools modularem System, um flexible Arbeitslösungen zu bieten."
-                       data-zh="技术特点：高度可调（50-120厘米），承载能力150公斤以上，可折叠设计便于运输。采用铝合金框架和MDF面板，结合Festool的模块化系统，提供灵活的工作解决方案。">
-                        Technical features: height adjustable (50-120cm), load capacity 150kg+, foldable design for easy transport. Uses aluminum alloy frame and MDF panels, combined with Festool's modular system to provide flexible work solutions.
-                    </p>
-                    
-                    <div class="project-btns">
-                        <a href="#" class="btn btn-primary">
-                            <i class="fas fa-eye"></i> <span data-en="View Details" data-de="Details anzeigen" data-zh="查看详情">View Details</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Project 5: Kristallzüchtung -->
-            <div class="project-item">
-                <div class="project-image">
-                    <img src="https://via.placeholder.com/800x500" alt="Kristallzüchtung">
-                </div>
-                <div class="project-info">
-                    <h3>Kristallzüchtung</h3>
-                    <div class="tags">
-                        <span class="tag" data-en="Industrial Design" data-de="Industriedesign" data-zh="工业设计">Industrial Design</span>
-                        <span class="tag" data-en="Scientific Equipment" data-de="Wissenschaftliche Ausrüstung" data-zh="科学设备">Scientific Equipment</span>
-                        <span class="tag" data-en="Precision Engineering" data-de="Präzisionsingenieurwesen" data-zh="精密工程">Precision Engineering</span>
-                    </div>
-                    <p data-en="A specialized equipment design for crystal growth experiments, focusing on precision control and user-friendly operation. The project involved extensive research into material science and laboratory workflows."
-                       data-de="Ein spezialisiertes Gerätedesign für Kristallzüchtungsexperimente mit Fokus auf Präzisionskontrolle und benutzerfreundlicher Bedienung. Das Projekt umfasste umfangreiche Forschung in Materialwissenschaft und Laborabläufen."
-                       data-zh="用于晶体生长实验的专用设备设计，专注于精确控制和用户友好操作。该项目涉及对材料科学和实验室工作流程的广泛研究。">
-                        A specialized equipment design for crystal growth experiments, focusing on precision control and user-friendly operation. The project involved extensive research into material science and laboratory workflows.
-                    </p>
-                    <p data-en="The design features modular components for easy maintenance, intuitive control interfaces, and a clean aesthetic that aligns with laboratory environments. Special attention was given to thermal management and vibration reduction."
-                       data-de="Das Design umfasst modulare Komponenten für einfache Wartung, intuitive Bedienschnittstellen und ein klares Ästhetik, das zu Laborumgebungen passt. Besonderes Augenmerk wurde auf Wärmemanagement und Vibrationsreduzierung gelegt."
-                       data-zh="设计特点包括便于维护的模块化组件、直观的控制界面以及与实验室环境相协调的简洁美学。特别关注了热管理和振动减少。">
-                        The design features modular components for easy maintenance, intuitive control interfaces, and a clean aesthetic that aligns with laboratory environments. Special attention was given to thermal management and vibration reduction.
-                    </p>
-                    
-                    <div class="project-btns">
-                        <a href="#" class="btn btn-primary">
-                            <i class="fas fa-eye"></i> <span data-en="View Details" data-de="Details anzeigen" data-zh="查看详情">View Details</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Project 6: 3D Metal Printing -->
-            <div class="project-item">
-                <div class="project-image">
-                    <img src="https://via.placeholder.com/800x500" alt="3D Metal Printing">
-                </div>
-                <div class="project-info">
-                    <h3 data-en="3D Metal Printing Design" data-de="3D-Metalldruck-Design" data-zh="3D金属打印设计">3D Metal Printing Design</h3>
-                    <div class="tags">
-                        <span class="tag" data-en="Additive Manufacturing" data-de="Additive Fertigung" data-zh="增材制造">Additive Manufacturing</span>
-                        <span class="tag" data-en="Industrial Design" data-de="Industriedesign" data-zh="工业设计">Industrial Design</span>
-                        <span class="tag" data-en="Material Innovation" data-de="Materialinnovation" data-zh="材料创新">Material Innovation</span>
-                    </div>
-                    <p data-en="Exploration of industrial applications for 3D metal printing technology. This project involved designing functional components that leverage the unique capabilities of metal additive manufacturing while addressing its limitations."
-                       data-de="Erforschung industrieller Anwendungen für 3D-Metalldrucktechnologie. Dieses Projekt umfasste das Design funktionaler Komponenten, die die einzigartigen Fähigkeiten des metallischen additiven Fertigungsprozesses nutzen und gleichzeitig dessen Grenzen berücksichtigen."
-                       data-zh="探索3D金属打印技术的工业应用。该项目涉及设计利用金属增材制造独特能力同时解决其局限性的功能组件。">
-                        Exploration of industrial applications for 3D metal printing technology. This project involved designing functional components that leverage the unique capabilities of metal additive manufacturing while addressing its limitations.
-                    </p>
-                    <p data-en="The designs showcase complex geometries that would be impossible with traditional manufacturing methods, optimized for strength-to-weight ratio and thermal performance. Special focus was given to post-processing requirements and surface finish quality."
-                       data-de="Die Designs zeigen komplexe Geometrien, die mit traditionellen Fertigungsmethoden unmöglich wären, optimiert für Festigkeits-Gewichts-Verhältnis und thermische Leistung. Besonderes Augenmerk wurde auf Nachbearbeitungsanforderungen und Oberflächengüte gelegt."
-                       data-zh="设计展示了传统制造方法无法实现的复杂几何形状，优化了强度重量比和热性能。特别关注了后处理要求和表面光洁度质量。">
-                        The designs showcase complex geometries that would be impossible with traditional manufacturing methods, optimized for strength-to-weight ratio and thermal performance. Special focus was given to post-processing requirements and surface finish quality.
-                    </p>
-                    
-                    <div class="project-btns">
-                        <a href="#" class="btn btn-primary">
-                            <i class="fas fa-eye"></i> <span data-en="View Details" data-de="Details anzeigen" data-zh="查看详情">View Details</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Download Portfolio Button -->
-        <div class="download-portfolio-btn">
-            <a href="#" class="btn btn-primary">
-                <i class="fas fa-file-pdf"></i> <span data-en="Download Full Portfolio (PDF)" data-de="Vollständiges Portfolio herunterladen (PDF)" data-zh="下载完整作品集 (PDF)">Download Full Portfolio (PDF)</span>
-            </a>
         </div>
     </section>
 
     <!-- About Section -->
     <section class="about-section" id="about">
         <div class="about-content">
-            <h2 data-en="About Me" data-de="Über mich" data-zh="关于我">About Me</h2>
+            <h2 lang="en" class="active">About Me</h2>
+            <h2 lang="de">Über mich</h2>
+            <h2 lang="zh">关于我</h2>
             
             <div class="about-grid">
                 <div class="about-text">
-                    <p data-en="Industrial designer focused on perfectly blending technological innovation with user experience. Holds a Master's degree in Industrial Design from the University of Kassel, Germany and a Bachelor's degree in Industrial Design from Sichuan Fine Arts Institute, China."
-                       data-de="Industriedesigner, der sich darauf konzentriert, technologische Innovation und Benutzererfahrung perfekt zu verbinden. Hat einen Master-Abschluss in Industriedesign von der Universität Kassel, Deutschland und einen Bachelor-Abschluss in Industriedesign vom Sichuan Fine Arts Institute, China."
-                       data-zh="专注于完美融合技术创新与用户体验的工业设计师。拥有德国卡塞尔大学工业设计硕士学位和中国四川美术学院工业设计学士学位。">
+                    <p lang="en" class="active">
+                        I am Yuanqing Xie, a multidisciplinary designer combining industrial design, UI/UX, 3D real-time rendering and AI technologies. I focus on creating solutions that blend aesthetics and functionality, connecting people with technology through design.
+                    </p>
+                    <p lang="de">
+                        Ich bin Yuanqing Xie, ein multidisziplinärer Designer, der Industriedesign, UI/UX, 3D-Echtzeit-Rendering und KI-Technologien kombiniert. Ich konzentriere mich auf die Erstellung von Lösungen, die Ästhetik und Funktionalität verbinden und Menschen durch Design mit Technologie verbinden.
+                    </p>
+                    <p lang="zh">
+                        我是谢原卿，一位结合工业设计、UI/UX、3D实时渲染和AI技术的多学科设计师。我专注于创造融合美学与功能的解决方案，通过设计连接人与技术。
+                    </p>
+                    
+                    <p lang="en" class="active">
                         Industrial designer focused on perfectly blending technological innovation with user experience. Holds a Master's degree in Industrial Design from the University of Kassel, Germany and a Bachelor's degree in Industrial Design from Sichuan Fine Arts Institute, China.
                     </p>
-                    <p data-en="As an industrial designer at Beckhoff Automation, responsible for product rendering, animation and industrial design solutions, focusing on automation technology product design. Participated in several international collaboration projects, including the development of a workbench system with Festool."
-                       data-de="Als Industriedesigner bei Beckhoff Automation verantwortlich für Produkt-Rendering, Animation und Industriedesign-Lösungen mit Fokus auf Automatisierungstechnik-Produktdesign. Beteiligt an mehreren internationalen Kooperationsprojekten, einschließlich der Entwicklung eines Werkbanksystems mit Festool."
-                       data-zh="作为Beckhoff Automation的工业设计师，负责产品渲染、动画和工业设计解决方案，专注于自动化技术产品设计。参与了多个国际合作项目，包括与Festool合作开发工作台系统。">
+                    <p lang="de">
+                        Industriedesigner, der sich darauf konzentriert, technologische Innovation und Benutzererfahrung perfekt zu verbinden. Absolvent eines Master-Abschlusses in Industriedesign von der Universität Kassel, Deutschland, und eines Bachelor-Abschlusses in Industriedesign vom Sichuan Fine Arts Institute, China.
+                    </p>
+                    <p lang="zh">
+                        专注于将技术创新与用户体验完美融合的工业设计师。拥有德国卡塞尔大学工业设计硕士学位和中国四川美术学院工业设计学士学位。
+                    </p>
+                    
+                    <p lang="en" class="active">
                         As an industrial designer at Beckhoff Automation, responsible for product rendering, animation and industrial design solutions, focusing on automation technology product design. Participated in several international collaboration projects, including the development of a workbench system with Festool.
                     </p>
-                    <p data-en="My design philosophy is to create products that are both beautiful and practical, solving real problems through innovative human-computer interaction while paying attention to sustainability and social impact. Skilled in combining traditional design methods with emerging technologies such as 3D real-time rendering and AI-generated content."
-                       data-de="Meine Designphilosophie ist es, Produkte zu schaffen, die sowohl schön als auch praktisch sind, reale Probleme durch innovative Mensch-Computer-Interaktion lösen und dabei Nachhaltigkeit und soziale Auswirkungen berücksichtigen. Fachkenntnisse in der Kombination traditioneller Designmethoden mit neuen Technologien wie 3D-Echtzeit-Rendering und KI-generierten Inhalten."
-                       data-zh="我的设计理念是创造既美观又实用的产品，通过创新的人机交互解决实际问题，同时关注可持续性和社会影响。擅长将传统设计方法与3D实时渲染和AI生成内容等新兴技术相结合。">
+                    <p lang="de">
+                        Als Industriedesigner bei Beckhoff Automation verantwortlich für Produkt-Rendering, Animation und Industriedesign-Lösungen mit Schwerpunkt auf Automatisierungstechnik-Produktdesign. Beteiligt an mehreren internationalen Kooperationsprojekten, einschließlich der Entwicklung eines Arbeitssystem mit Festool.
+                    </p>
+                    <p lang="zh">
+                        作为Beckhoff Automation的工业设计师，负责产品渲染、动画和工业设计解决方案，专注于自动化技术产品设计。参与了多个国际合作项目，包括与Festool合作开发工作台系统。
+                    </p>
+                    
+                    <p lang="en" class="active">
                         My design philosophy is to create products that are both beautiful and practical, solving real problems through innovative human-computer interaction while paying attention to sustainability and social impact. Skilled in combining traditional design methods with emerging technologies such as 3D real-time rendering and AI-generated content.
+                    </p>
+                    <p lang="de">
+                        Meine Designphilosophie ist es, Produkte zu schaffen, die sowohl schön als auch praktisch sind, reale Probleme durch innovative Mensch-Computer-Interaktion lösen und dabei Nachhaltigkeit und soziale Auswirkungen berücksichtigen. Erfahren in der Kombination traditioneller Designmethoden mit neuen Technologien wie 3D-Echtzeit-Rendering und KI-generierten Inhalten.
+                    </p>
+                    <p lang="zh">
+                        我的设计理念是创造既美观又实用的产品，通过创新的人机交互解决实际问题，同时关注可持续性和社会影响。擅长将传统设计方法与3D实时渲染和AI生成内容等新兴技术相结合。
                     </p>
                 </div>
                 
                 <div class="skills">
                     <div class="skill-item">
-                        <h4><i class="fas fa-pen-ruler"></i> <span data-en="Design Expertise" data-de="Design-Expertise" data-zh="设计专长">Design Expertise</span></h4>
-                        <p data-en="Industrial Design · Concept Development · UI/UX Design · Graphic Design · Web Design · 3D Modeling"
-                           data-de="Industriedesign · Konzeptentwicklung · UI/UX Design · Grafikdesign · Webdesign · 3D-Modellierung"
-                           data-zh="工业设计 · 概念开发 · UI/UX设计 · 平面设计 · 网页设计 · 3D建模">
-                            Industrial Design · Concept Development · UI/UX Design · Graphic Design · Web Design · 3D Modeling
-                        </p>
+                        <h4><i class="fas fa-pen-ruler"></i> 
+                            <span lang="en" class="active">Design Expertise</span>
+                            <span lang="de">Design-Expertise</span>
+                            <span lang="zh">设计专长</span>
+                        </h4>
+                        <p lang="en" class="active">Industrial Design · 3D Real-time Rendering · 3D Animation · Graphic Design · AI Technology · Video Creation · UI/UX Design · Web Design</p>
+                        <p lang="de">Industriedesign · 3D-Echtzeit-Rendering · 3D-Animation · Grafikdesign · KI-Technologie · Videoproduktion · UI/UX-Design · Webdesign</p>
+                        <p lang="zh">工业设计 · 3D实时渲染 · 3D动画 · 平面设计 · AI技术 · 视频创作 · UI/UX设计 · 网页设计</p>
                     </div>
                     <div class="skill-item">
-                        <h4><i class="fas fa-laptop-code"></i> <span data-en="Technical Skills" data-de="Technische Fähigkeiten" data-zh="技术技能">Technical Skills</span></h4>
-                        <p data-en="Cinema4D · KeyShot · Adobe Suite · Three.js · Python · 3D Real-time Rendering"
-                           data-de="Cinema4D · KeyShot · Adobe Suite · Three.js · Python · 3D-Echtzeit-Rendering"
-                           data-zh="Cinema4D · KeyShot · Adobe套件 · Three.js · Python · 3D实时渲染">
-                            Cinema4D · KeyShot · Adobe Suite · Three.js · Python · 3D Real-time Rendering
-                        </p>
-                    </div>
-                    <div class="skill-item">
-                        <h4><i class="fas fa-brain"></i> <span data-en="AI Technologies" data-de="KI-Technologien" data-zh="AI技术">AI Technologies</span></h4>
-                        <p data-en="AI Video Generation · Machine Learning Applications · Computer Vision · Gesture Recognition"
-                           data-de="KI-Videogenerierung · Machine-Learning-Anwendungen · Computer Vision · Gestenerkennung"
-                           data-zh="AI视频生成 · 机器学习应用 · 计算机视觉 · 手势识别">
-                            AI Video Generation · Machine Learning Applications · Computer Vision · Gesture Recognition
-                        </p>
-                    </div>
-                    <div class="skill-item">
-                        <h4><i class="fas fa-graduation-cap"></i> <span data-en="Education" data-de="Ausbildung" data-zh="教育背景">Education</span></h4>
-                        <p data-en="University of Kassel - Master in Industrial Design<br>Sichuan Fine Arts Institute - Bachelor in Industrial Design"
-                           data-de="Universität Kassel - Master in Industriedesign<br>Sichuan Fine Arts Institute - Bachelor in Industriedesign"
-                           data-zh="卡塞尔大学 - 工业设计硕士<br>四川美术学院 - 工业设计学士">
-                            University of Kassel - Master in Industrial Design<br>Sichuan Fine Arts Institute - Bachelor in Industrial Design
-                        </p>
+                        <h4><i class="fas fa-brain"></i> 
+                            <span lang="en" class="active">AI Technologies</span>
+                            <span lang="de">KI-Technologien</span>
+                            <span lang="zh">AI技术</span>
+                        </h4>
+                        <p lang="en" class="active">AI Video Generation · Machine Learning Applications · Computer Vision · Gesture Recognition</p>
+                        <p lang="de">KI-Videogenerierung · Machine-Learning-Anwendungen · Computer Vision · Gestenerkennung</p>
+                        <p lang="zh">AI视频生成 · 机器学习应用 · 计算机视觉 · 手势识别</p>
                     </div>
                 </div>
             </div>
@@ -1055,45 +933,62 @@
     <!-- Contact Section -->
     <section class="contact-section" id="contact">
         <div class="section-header">
-            <h2 data-en="Contact" data-de="Kontakt" data-zh="联系">Contact</h2>
-            <p data-en="Interested in my work? Feel free to contact me to discuss potential collaboration opportunities"
-               data-de="Interessiert an meiner Arbeit? Kontaktieren Sie mich gerne, um mögliche Zusammenarbeitsmöglichkeiten zu besprechen"
-               data-zh="对我的作品感兴趣？欢迎联系我讨论潜在合作机会">
+            <h2 lang="en" class="active">Contact</h2>
+            <h2 lang="de">Kontakt</h2>
+            <h2 lang="zh">联系</h2>
+            <p lang="en" class="active">
                 Interested in my work? Feel free to contact me to discuss potential collaboration opportunities
+            </p>
+            <p lang="de">
+                Interessiert an meiner Arbeit? Kontaktieren Sie mich gerne, um mögliche Kooperationsmöglichkeiten zu besprechen
+            </p>
+            <p lang="zh">
+                对我的作品感兴趣？欢迎联系我讨论潜在的合作机会
             </p>
         </div>
         
         <div class="contact-info">
             <div class="contact-card">
                 <i class="fas fa-envelope"></i>
-                <h3 data-en="Email" data-de="E-Mail" data-zh="电子邮件">Email</h3>
+                <h3 lang="en" class="active">Email</h3>
+                <h3 lang="de">E-Mail</h3>
+                <h3 lang="zh">邮箱</h3>
                 <p>xieyuantsing@gmail.com</p>
             </div>
             <div class="contact-card">
                 <i class="fas fa-phone"></i>
-                <h3 data-en="Phone" data-de="Telefon" data-zh="电话">Phone</h3>
+                <h3 lang="en" class="active">Phone</h3>
+                <h3 lang="de">Telefon</h3>
+                <h3 lang="zh">电话</h3>
                 <p>+49 015257 634933</p>
             </div>
             <div class="contact-card">
                 <i class="fas fa-map-marker-alt"></i>
-                <h3 data-en="Location" data-de="Standort" data-zh="位置">Location</h3>
-                <p data-en="Germany · Verl" data-de="Deutschland · Verl" data-zh="德国 · 费尔">Germany · Verl</p>
+                <h3 lang="en" class="active">Location</h3>
+                <h3 lang="de">Standort</h3>
+                <h3 lang="zh">位置</h3>
+                <p lang="en" class="active">Germany · Verl</p>
+                <p lang="de">Deutschland · Verl</p>
+                <p lang="zh">德国 · 费尔</p>
             </div>
         </div>
         
         <a href="mailto:xieyuantsing@gmail.com" class="btn btn-primary">
-            <i class="fas fa-paper-plane"></i> <span data-en="Send Email" data-de="E-Mail senden" data-zh="发送邮件">Send Email</span>
+            <i class="fas fa-paper-plane"></i> 
+            <span lang="en" class="active">Send Email</span>
+            <span lang="de">Email senden</span>
+            <span lang="zh">发送邮件</span>
         </a>
     </section>
 
     <!-- Footer -->
     <footer>
         <div class="footer-links">
-            <a href="#home" data-en="Home" data-de="Startseite" data-zh="首页">Home</a>
-            <a href="#portfolio" data-en="Portfolio" data-de="Portfolio" data-zh="作品集">Portfolio</a>
-            <a href="#about" data-en="About" data-de="Über mich" data-zh="关于">About</a>
-            <a href="#contact" data-en="Contact" data-de="Kontakt" data-zh="联系">Contact</a>
-            <a href="#" data-en="Privacy Policy" data-de="Datenschutz" data-zh="隐私政策">Privacy Policy</a>
+            <a href="#home" data-i18n="home">Home</a>
+            <a href="#projects" data-i18n="projects">Projects</a>
+            <a href="#about" data-i18n="about">About</a>
+            <a href="#contact" data-i18n="contact">Contact</a>
+            <a href="#" data-i18n="privacy">Privacy Policy</a>
         </div>
         
         <div class="social-icons">
@@ -1103,26 +998,221 @@
             <a href="#"><i class="fab fa-instagram"></i></a>
         </div>
         
-        <p class="copyright" data-en="© 2023 Yuanqing Xie. All rights reserved." 
-           data-de="© 2023 Yuanqing Xie. Alle Rechte vorbehalten."
-           data-zh="© 2023 谢原卿。保留所有权利。">
-            © 2023 Yuanqing Xie. All rights reserved.
+        <p class="copyright" data-i18n="copyright">
+            © 2023 谢原卿. All rights reserved.
         </p>
     </footer>
 
     <script>
-        // 3D Viewer for SmartGestureBox with HDR environment
-        function init3DViewer() {
-            const container = document.getElementById('sgb-viewer-container');
+        // 翻译字典
+        const translations = {
+            en: {
+                "home": "Home",
+                "projects": "Projects",
+                "about": "About",
+                "contact": "Contact",
+                "privacy": "Privacy Policy",
+                "send_email": "Send Email",
+                "copyright": "© 2023 Yuanqing Xie. All rights reserved.",
+                "loading_model": "Loading 3D model...",
+                "model_error": "Failed to load 3D model",
+                "try_again": "Try Again",
+                "about_me": "About Me",
+                "email": "Email",
+                "phone": "Phone",
+                "location": "Location"
+            },
+            de: {
+                "home": "Startseite",
+                "projects": "Projekte",
+                "about": "Über mich",
+                "contact": "Kontakt",
+                "privacy": "Datenschutz",
+                "send_email": "Email senden",
+                "copyright": "© 2023 Yuanqing Xie. Alle Rechte vorbehalten.",
+                "loading_model": "3D-Modell wird geladen...",
+                "model_error": "3D-Modell konnte nicht geladen werden",
+                "try_again": "Erneut versuchen",
+                "about_me": "Über mich",
+                "email": "E-Mail",
+                "phone": "Telefon",
+                "location": "Standort"
+            },
+            zh: {
+                "home": "首页",
+                "projects": "项目",
+                "about": "关于",
+                "contact": "联系",
+                "privacy": "隐私政策",
+                "send_email": "发送邮件",
+                "copyright": "© 2023 谢原卿。保留所有权利。",
+                "loading_model": "加载3D模型中...",
+                "model_error": "加载3D模型失败",
+                "try_again": "重试",
+                "about_me": "关于我",
+                "email": "邮箱",
+                "phone": "电话",
+                "location": "位置"
+            }
+        };
+
+        // 初始化语言切换功能
+        function setupLanguageToggle() {
+            const languageToggle = document.getElementById('language-toggle');
+            const languageOptions = document.querySelectorAll('.language-option');
+            const mobileMenuLinks = document.querySelectorAll('.mobile-menu a');
+            const navLinks = document.querySelectorAll('.nav-links a:not(.language-btn)');
+            
+            // 从localStorage或浏览器设置获取首选语言
+            let currentLang = localStorage.getItem('preferredLang') || 
+                             navigator.language.split('-')[0] || 
+                             'en';
+            
+            // 确保我们支持这种语言
+            if (!translations[currentLang]) {
+                currentLang = 'en';
+            }
+            
+            // 初始化页面语言
+            changeLanguage(currentLang);
+            
+            // 设置语言选项点击事件
+            if (languageOptions.length > 0) {
+                languageOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        const lang = this.getAttribute('data-lang');
+                        changeLanguage(lang);
+                        
+                        // 更新按钮文本
+                        const languageBtn = languageToggle.querySelector('.language-btn');
+                        if (languageBtn) {
+                            languageBtn.innerHTML = `<i class="fas fa-globe"></i> ${lang.toUpperCase()}`;
+                        }
+                        
+                        // 更新选项激活状态
+                        languageOptions.forEach(opt => {
+                            opt.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                    });
+                    
+                    // 设置初始激活状态
+                    if (option.getAttribute('data-lang') === currentLang) {
+                        option.classList.add('active');
+                    }
+                });
+            }
+            
+            // 更新导航链接的文本
+            function updateNavLinks(lang) {
+                const translation = translations[lang];
+                if (!translation) return;
+                
+                navLinks.forEach(link => {
+                    const key = link.getAttribute('href').replace('#', '');
+                    if (translation[key]) {
+                        link.textContent = translation[key];
+                    }
+                });
+                
+                mobileMenuLinks.forEach(link => {
+                    const key = link.getAttribute('href').replace('#', '');
+                    if (translation[key]) {
+                        link.textContent = translation[key];
+                    }
+                });
+            }
+            
+            // 切换语言函数
+            function changeLanguage(lang) {
+                if (!translations[lang]) return;
+                
+                // 保存语言偏好
+                localStorage.setItem('preferredLang', lang);
+                
+                // 更新语言属性
+                document.documentElement.lang = lang;
+                
+                // 隐藏所有语言内容
+                document.querySelectorAll('[lang]').forEach(element => {
+                    element.classList.remove('active');
+                });
+                
+                // 显示当前语言内容
+                document.querySelectorAll(`[lang="${lang}"]`).forEach(element => {
+                    element.classList.add('active');
+                });
+                
+                // 更新翻译文本
+                updateTextContent(lang);
+                updateNavLinks(lang);
+                
+                // 更新按钮文本
+                const languageBtn = document.querySelector('.language-btn');
+                if (languageBtn) {
+                    languageBtn.innerHTML = `<i class="fas fa-globe"></i> ${lang.toUpperCase()}`;
+                }
+            }
+            
+            // 更新页面上的文本内容
+            function updateTextContent(lang) {
+                const translation = translations[lang];
+                if (!translation) return;
+                
+                // 更新具有data-i18n属性的元素
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    if (translation[key]) {
+                        element.textContent = translation[key];
+                    }
+                });
+                
+                // 更新按钮文本
+                const sendEmailBtn = document.querySelector('.btn-primary');
+                if (sendEmailBtn && translation['send_email']) {
+                    sendEmailBtn.innerHTML = `<i class="fas fa-paper-plane"></i> ${translation['send_email']}`;
+                }
+                
+                // 更新版权信息
+                const copyright = document.querySelector('.copyright');
+                if (copyright && translation['copyright']) {
+                    copyright.textContent = translation['copyright'];
+                }
+                
+                // 更新3D查看器文本（如果存在）
+                const loadingDivs = document.querySelectorAll('.model-loading');
+                if (loadingDivs && translation['loading_model']) {
+                    loadingDivs.forEach(div => {
+                        div.querySelector('p').textContent = translation['loading_model'];
+                    });
+                }
+                
+                const errorDivs = document.querySelectorAll('.model-error');
+                if (errorDivs) {
+                    errorDivs.forEach(div => {
+                        if (translation['model_error']) {
+                            div.querySelector('p').textContent = translation['model_error'];
+                        }
+                        if (translation['try_again']) {
+                            div.querySelector('button').innerHTML = `<i class="fas fa-sync-alt"></i> ${translation['try_again']}`;
+                        }
+                    });
+                }
+            }
+        }
+
+        // 通用3D模型查看器初始化
+        function initModelViewer(containerId, modelPath, autoRotate = true) {
+            const container = document.getElementById(containerId);
             if (!container) {
-                console.error('3D viewer container not found');
+                console.error(`3D viewer container ${containerId} not found`);
                 return;
             }
 
             const loadingDiv = container.querySelector('.model-loading');
             
             try {
-                // Check if required Three.js components are available
+                // 检查必需的Three.js组件
                 if (typeof THREE === 'undefined') {
                     throw new Error('Three.js not loaded');
                 }
@@ -1132,14 +1222,12 @@
                 if (typeof THREE.OrbitControls === 'undefined') {
                     throw new Error('OrbitControls not available');
                 }
-                if (typeof THREE.RGBELoader === 'undefined') {
-                    throw new Error('RGBELoader not available for HDR');
-                }
 
-                // Create scene
+                // 创建场景
                 const scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x1a1a1a);
                 
-                // Setup camera
+                // 设置相机
                 const camera = new THREE.PerspectiveCamera(
                     75, 
                     container.clientWidth / container.clientHeight, 
@@ -1148,7 +1236,7 @@
                 );
                 camera.position.z = 2;
                 
-                // Setup renderer
+                // 设置渲染器
                 const renderer = new THREE.WebGLRenderer({ 
                     antialias: true,
                     alpha: true
@@ -1157,46 +1245,33 @@
                 renderer.setPixelRatio(window.devicePixelRatio);
                 renderer.outputEncoding = THREE.sRGBEncoding;
                 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                renderer.toneMappingExposure = 0.8;
+                renderer.toneMappingExposure = 1.2; // 增加曝光度
                 
-                // Clear container and add renderer
+                // 清空容器并添加渲染器
                 container.innerHTML = '';
                 container.appendChild(renderer.domElement);
                 
-                // Create PMREM generator
-                const pmremGenerator = new THREE.PMREMGenerator(renderer);
-                pmremGenerator.compileEquirectangularShader();
+                // 添加更亮的灯光
+                const ambientLight = new THREE.AmbientLight(0xffffff, 1.2); // 增加强度
+                scene.add(ambientLight);
                 
-                // Load HDR environment map
-                new THREE.RGBELoader()
-                    .setDataType(THREE.UnsignedByteType)
-                    .load('assets/Zbyg-Studio_0026_2k.hdr', function(texture) {
-                        
-                        const envMap = pmremGenerator.fromEquirectangular(texture).texture;
-                        pmremGenerator.dispose();
-                        
-                        // Apply environment map to scene
-                        scene.environment = envMap;
-                        scene.background = envMap;
-                        
-                        // Now load the model after environment is ready
-                        loadModel(scene, camera, renderer, container, loadingDiv);
-                        
-                    }, undefined, function(error) {
-                        console.error('Error loading HDR environment:', error);
-                        // Fallback to basic lighting if HDR fails
-                        scene.background = new THREE.Color(0xf0f0f0);
-                        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-                        scene.add(ambientLight);
-                        
-                        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                        directionalLight.position.set(1, 1, 1);
-                        scene.add(directionalLight);
-                        
-                        loadModel(scene, camera, renderer, container, loadingDiv);
-                    });
+                const directionalLight1 = new THREE.DirectionalLight(0xffffff, 1.0); // 增加强度
+                directionalLight1.position.set(1, 1, 1);
+                scene.add(directionalLight1);
                 
-                // Handle window resize
+                const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8); // 增加强度
+                directionalLight2.position.set(-1, -1, -1);
+                scene.add(directionalLight2);
+                
+                // 添加填充光
+                const fillLight = new THREE.DirectionalLight(0xffffff, 0.6);
+                fillLight.position.set(0, 1, 0);
+                scene.add(fillLight);
+                
+                // 加载模型
+                loadModel(containerId, scene, camera, renderer, container, loadingDiv, modelPath, autoRotate);
+                
+                // 处理窗口大小变化
                 function handleResize() {
                     camera.aspect = container.clientWidth / container.clientHeight;
                     camera.updateProjectionMatrix();
@@ -1210,12 +1285,12 @@
             }
         }
 
-        function loadModel(scene, camera, renderer, container, loadingDiv) {
+        function loadModel(containerId, scene, camera, renderer, container, loadingDiv, modelPath, autoRotate) {
             try {
-                // Initialize loader with Draco support
+                // 初始化带有Draco支持的加载器
                 const loader = new THREE.GLTFLoader();
                 
-                // Set up Draco decoder
+                // 设置Draco解码器
                 if (typeof THREE.DRACOLoader !== 'undefined') {
                     const dracoLoader = new THREE.DRACOLoader();
                     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
@@ -1224,24 +1299,27 @@
                     console.warn('DRACOLoader not available - model may not load correctly');
                 }
 
-                // Load model
-                const modelPath = 'assets/sgb.glb';
-                
+                // 加载模型
                 loader.load(
                     modelPath,
                     function(gltf) {
                         const model = gltf.scene;
                         scene.add(model);
                         
-                        // Enable shadows if needed
+                        // 如果需要启用阴影
                         model.traverse(function(child) {
                             if (child.isMesh) {
                                 child.castShadow = true;
                                 child.receiveShadow = true;
+                                // 增加材质亮度
+                                if (child.material) {
+                                    child.material.emissiveIntensity = 0.2;
+                                    child.material.needsUpdate = true;
+                                }
                             }
                         });
                         
-                        // Center and scale model
+                        // 居中并缩放模型
                         const box = new THREE.Box3().setFromObject(model);
                         const center = box.getCenter(new THREE.Vector3());
                         model.position.sub(center);
@@ -1253,14 +1331,14 @@
                         
                         console.log('3D model loaded successfully');
                         
-                        // Add controls after model loads
+                        // 模型加载后添加控制
                         const controls = new THREE.OrbitControls(camera, renderer.domElement);
                         controls.enableDamping = true;
                         controls.dampingFactor = 0.25;
-                        controls.autoRotate = true;
+                        controls.autoRotate = autoRotate;
                         controls.autoRotateSpeed = 1.0;
                         
-                        // Animation loop
+                        // 动画循环
                         function animate() {
                             requestAnimationFrame(animate);
                             controls.update();
@@ -1268,17 +1346,7 @@
                         }
                         animate();
                         
-                        // Set up rotate toggle button
-                        const rotateBtn = document.getElementById('rotate-toggle-btn');
-                        if (rotateBtn) {
-                            rotateBtn.addEventListener('click', function(e) {
-                                e.preventDefault();
-                                controls.autoRotate = !controls.autoRotate;
-                                updateRotateButtonText(rotateBtn, controls.autoRotate);
-                            });
-                        }
-                        
-                        // Remove loading indicator
+                        // 移除加载指示器
                         if (loadingDiv) {
                             loadingDiv.style.opacity = '0';
                             setTimeout(() => {
@@ -1287,13 +1355,13 @@
                         }
                     },
                     function(xhr) {
-                        // Progress callback
+                        // 进度回调
                         const percent = (xhr.loaded / xhr.total * 100).toFixed(0);
                         if (loadingDiv) {
                             loadingDiv.innerHTML = `
                                 <div>
                                     <i class="fas fa-spinner fa-spin"></i>
-                                    <p>Loading model... ${percent}%</p>
+                                    <p>${document.querySelector('[data-i18n="loading_model"]').textContent} ${percent}%</p>
                                 </div>
                             `;
                         }
@@ -1310,118 +1378,20 @@
         }
 
         function showModelError(container, error) {
+            const currentLang = document.documentElement.lang || 'en';
+            const tryAgainText = translations[currentLang]?.try_again || 'Try Again';
+            const modelErrorText = translations[currentLang]?.model_error || 'Failed to load 3D model';
+            
             container.innerHTML = `
                 <div class="model-error">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <p>Failed to load 3D model</p>
+                    <p>${modelErrorText}</p>
                     <small>${error.message || 'Unknown error'}</small>
                     <button onclick="window.location.reload()">
-                        <i class="fas fa-sync-alt"></i> Try Again
+                        <i class="fas fa-sync-alt"></i> ${tryAgainText}
                     </button>
                 </div>
             `;
-        }
-
-        function updateRotateButtonText(button, isAutoRotating) {
-            const lang = localStorage.getItem('preferredLanguage') || 'en';
-            const texts = {
-                'en': isAutoRotating ? 'Stop Rotation' : 'Auto Rotate',
-                'de': isAutoRotating ? 'Rotation stoppen' : 'Auto-Rotation',
-                'zh': isAutoRotating ? '停止旋转' : '自动旋转'
-            };
-            button.querySelector('span').textContent = texts[lang] || texts['en'];
-        }
-
-        // Language Switching
-        function setupLanguageSwitching() {
-            const languageToggle = document.getElementById('language-toggle');
-            if (!languageToggle) return;
-
-            let currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
-
-            function updateLanguage(lang) {
-                try {
-                    // Update all elements with data attributes
-                    document.querySelectorAll('[data-en], [data-de], [data-zh]').forEach(element => {
-                        if (element.hasAttribute(`data-${lang}`)) {
-                            const value = element.getAttribute(`data-${lang}`);
-                            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                                element.value = value;
-                            } else {
-                                element.textContent = value;
-                            }
-                        }
-                    });
-
-                    // Update HTML lang attribute
-                    document.documentElement.lang = lang;
-                    currentLanguage = lang;
-                    localStorage.setItem('preferredLanguage', lang);
-
-                    // Update page title
-                    const titles = {
-                        'en': 'Yuanqing Xie - Official Website',
-                        'de': 'Yuanqing Xie - Offizielle Website',
-                        'zh': '谢原卿官方网站'
-                    };
-                    document.title = titles[lang] || titles['en'];
-
-                    // Update language button text
-                    const langTexts = {
-                        'en': 'EN',
-                        'de': 'DE',
-                        'zh': '中文'
-                    };
-                    const btn = languageToggle.querySelector('.language-btn');
-                    if (btn) {
-                        btn.innerHTML = `<i class="fas fa-globe"></i> ${langTexts[lang] || 'EN'}`;
-                    }
-
-                } catch (error) {
-                    console.error('Error updating language:', error);
-                }
-            }
-
-            // Language option click handler
-            document.querySelectorAll('.language-option').forEach(option => {
-                option.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const lang = this.getAttribute('data-lang');
-                    if (currentLanguage !== lang) {
-                        updateLanguage(lang);
-                    }
-                    hideLanguageDropdown();
-                });
-            });
-
-            function hideLanguageDropdown() {
-                const dropdown = languageToggle.querySelector('.language-dropdown');
-                if (dropdown) {
-                    dropdown.style.display = 'none';
-                }
-            }
-
-            // Language button click handler
-            const languageBtn = languageToggle.querySelector('.language-btn');
-            if (languageBtn) {
-                languageBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const dropdown = languageToggle.querySelector('.language-dropdown');
-                    if (dropdown) {
-                        dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
-                    }
-                });
-            }
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!languageToggle.contains(e.target)) {
-                    hideLanguageDropdown();
-                }
-            });
-
-            // Initialize language
-            updateLanguage(currentLanguage);
         }
 
         // Mobile Menu Toggle
@@ -1444,7 +1414,7 @@
                 anchor.addEventListener('click', function(e) {
                     e.preventDefault();
                     
-                    // Close mobile menu if open
+                    // 如果移动菜单打开则关闭它
                     const mobileMenu = document.getElementById('mobile-menu');
                     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
                     if (mobileMenu && mobileMenu.classList.contains('show')) {
@@ -1454,7 +1424,7 @@
                         }
                     }
                     
-                    // Scroll to target
+                    // 滚动到目标
                     const target = document.querySelector(this.getAttribute('href'));
                     if (target) {
                         target.scrollIntoView({
@@ -1467,46 +1437,16 @@
 
         // Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            init3DViewer();
-            setupLanguageSwitching();
+            // 初始化第一个模型（带自动旋转）
+            initModelViewer('sgb-viewer-container', 'assets/sgb.glb', true);
+            
+            // 初始化第二个模型（无自动旋转）
+            initModelViewer('tractor-viewer-container', 'assets/tractor.glb', false);
+            
             setupMobileMenu();
             setupSmoothScrolling();
-            
-            // Set initial language based on browser preference if not set
-            if (!localStorage.getItem('preferredLanguage')) {
-                const browserLang = navigator.language.substring(0, 2);
-                if (browserLang === 'de' || browserLang === 'zh') {
-                    const currentLanguage = browserLang;
-                    localStorage.setItem('preferredLanguage', currentLanguage);
-                    updateLanguage(currentLanguage);
-                }
-            }
+            setupLanguageToggle();
         });
-
-        function updateLanguage(lang) {
-            // Update all elements with language attributes
-            document.querySelectorAll('[data-en], [data-de], [data-zh]').forEach(element => {
-                if (element.hasAttribute(`data-${lang}`)) {
-                    const value = element.getAttribute(`data-${lang}`);
-                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                        element.value = value;
-                    } else {
-                        element.textContent = value;
-                    }
-                }
-            });
-
-            // Update HTML lang attribute
-            document.documentElement.lang = lang;
-
-            // Update page title
-            const titles = {
-                'en': 'Yuanqing Xie - Official Website',
-                'de': 'Yuanqing Xie - Offizielle Website',
-                'zh': '谢原卿官方网站'
-            };
-            document.title = titles[lang] || titles['en'];
-        }
     </script>
 </body>
 </html>
