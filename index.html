@@ -676,7 +676,7 @@
             
             .language-toggle {
                 display: flex !important;
-                margin-right: 50px;
+                margin-right: 15px;
             }
             
             .mobile-menu-btn {
@@ -779,9 +779,6 @@
             Your browser does not support the video tag.
         </video>
         <div class="video-controls">
-            <button class="video-btn" id="quality-btn" title="Switch to 4K">
-                2K
-            </button>
             <button class="video-btn" id="mute-btn" title="Unmute">
                 <i class="fas fa-volume-mute"></i>
             </button>
@@ -1461,66 +1458,4 @@
                     if (mobileMenu && mobileMenu.classList.contains('show')) {
                         mobileMenu.classList.remove('show');
                         if (mobileMenuBtn) {
-                            mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-                        }
-                    }
-                    
-                    // 滚动到目标
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-        }
-
-        // Initialize everything when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // 视频控制功能
-            const video = document.getElementById('hero-video');
-            const qualityBtn = document.getElementById('quality-btn');
-            const muteBtn = document.getElementById('mute-btn');
-            let is4K = false;
-            let isMuted = true;
-            
-            // 切换视频质量
-            qualityBtn.addEventListener('click', function() {
-                is4K = !is4K;
-                if (is4K) {
-                    video.src = 'assets/Hero_4096x2160.mp4';
-                    qualityBtn.textContent = '4K';
-                    qualityBtn.setAttribute('title', 'Switch to 2K');
-                } else {
-                    video.src = 'assets/Hero_2048x1080.mp4';
-                    qualityBtn.textContent = '2K';
-                    qualityBtn.setAttribute('title', 'Switch to 4K');
-                }
-                video.load();
-                video.play();
-            });
-            
-            // 切换静音
-            muteBtn.addEventListener('click', function() {
-                isMuted = !isMuted;
-                video.muted = isMuted;
-                if (isMuted) {
-                    muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-                    muteBtn.setAttribute('title', 'Unmute');
-                } else {
-                    muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-                    muteBtn.setAttribute('title', 'Mute');
-                }
-            });
-            
-            // 初始化其他功能
-            initModelViewer('sgb-viewer-container', 'assets/sgb.glb', true);
-            initModelViewer('tractor-viewer-container', 'assets/tractor.glb', false);
-            setupMobileMenu();
-            setupSmoothScrolling();
-            setupLanguageToggle();
-        });
-    </script>
-</body>
-</html>
+   
