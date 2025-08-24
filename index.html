@@ -15,7 +15,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
   <style>
-    :root{ --white:#fff; --black:#000; --nav-h:72px; }
+    :root{
+      --white:#fff; --black:#000;
+      --nav-h:72px;
+      --gap:5px;            /* 统一所有基准间距 */
+      --frame-radius:12px;  /* 小圆角 */
+    }
     *{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{
@@ -26,35 +31,25 @@
       font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
     }
 
-    /* NAV */
+    /* NAV（顶部留 5px 间距：导航整体下移 gap） */
     .navbar{
-      position:fixed;inset:0 0 auto 0;height:var(--nav-h);
+      position:fixed;left:0;right:0;top:var(--gap);height:var(--nav-h);
       display:flex;align-items:center;justify-content:space-between;
-      padding:0 3%; background:transparent; z-index:1000; white-space:nowrap; overflow:visible;
+      padding:0 2%; background:transparent; z-index:1000; white-space:nowrap;
     }
     .logo-wrap{display:flex;align-items:center;gap:10px;min-width:0;white-space:nowrap}
-    .logo{height:26px;width:auto;flex:0 0 auto}
+    .logo{height:26px;width:auto}
     .site-title{font-weight:700;line-height:1;white-space:nowrap;font-size:clamp(1rem,2.2vw,1.35rem)}
     html[data-lang="en"] .navbar, html[data-lang="de"] .navbar{font-weight:400}
-
-    .nav-right{display:flex;align-items:center;gap:16px;min-width:0}
-    .nav-links{display:flex;align-items:center;gap:20px;min-width:0}
+    .nav-right{display:flex;align-items:center;gap:16px;min-width:0;transform:translateX(-10px)}
+    .nav-links{display:flex;align-items:center;gap:20px}
     .nav-links a{color:#fff;text-decoration:none;font-size:clamp(1rem,1.6vw,1.15rem);white-space:nowrap}
     .mobile-btn{display:none;background:none;border:0;color:#fff;font-size:1.6rem;cursor:pointer}
 
-    /* Language button (text only) */
     .lang{position:relative;z-index:1002}
-    .lang-btn{
-      background:none;border:none;color:#fff;cursor:pointer;
-      padding:6px 8px;border-radius:6px;white-space:nowrap;
-      font-size:clamp(1rem,1.6vw,1.15rem);
-    }
+    .lang-btn{background:none;border:none;color:#fff;cursor:pointer;padding:6px 8px;border-radius:6px;white-space:nowrap;font-size:clamp(1rem,1.6vw,1.15rem)}
     .lang-btn:focus{outline:none}
-    .lang-menu{
-      position:absolute;top:calc(100% + 8px);right:0;display:none;flex-direction:column;
-      background:#000;border:1px solid rgba(255,255,255,.18);border-radius:10px;min-width:140px;
-      box-shadow:0 8px 28px rgba(0,0,0,.5);z-index:1003;overflow:hidden
-    }
+    .lang-menu{position:absolute;top:calc(100% + 8px);right:0;display:none;flex-direction:column;background:#000;border:1px solid rgba(255,255,255,.18);border-radius:10px;min-width:140px;box-shadow:0 8px 28px rgba(0,0,0,.5);z-index:1003;overflow:hidden}
     .lang.open .lang-menu{display:flex}
     .lang-item{padding:10px 12px;cursor:pointer}
     .lang-item:hover{background:rgba(255,255,255,.08)}
@@ -63,59 +58,62 @@
     @media (max-width: 860px){
       .nav-links{display:none}
       .mobile-btn{display:inline-block}
+      .navbar{padding:0 1.5%}
+      .nav-right{transform:translateX(-14px)}
     }
-    .mobile-menu{
-      position:fixed;top:var(--nav-h);left:0;width:100%;display:none;flex-direction:column;gap:12px;
-      background:#000;border-top:1px solid rgba(255,255,255,.12);z-index:999;padding:18px 3%
-    }
+    .mobile-menu{position:fixed;top:calc(var(--nav-h) + var(--gap));left:0;width:100%;display:none;flex-direction:column;gap:12px;background:#000;border-top:1px solid rgba(255,255,255,.12);z-index:999;padding:18px 3%}
     .mobile-menu.show{display:flex}
     .mobile-menu a{color:#fff;text-decoration:none;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
 
-    /* HERO videos (loop) */
-    .hero,.hero2{height:100vh;position:relative;display:flex;align-items:center;justify-content:center;padding-top:var(--nav-h);background:#111}
-    .hero video,.hero2 video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+    /* HERO（视频 cover；无描边倒角框；间距= --gap） */
+    .hero,.hero2{
+      height:100vh;position:relative;display:flex;align-items:center;justify-content:center;background:#000;
+    }
+    .hero{padding:var(--gap); padding-top:var(--gap);}
+    .hero2{padding:var(--gap); margin-top:calc(-1 * var(--gap));}
+
+    .media-frame{
+      position:relative;width:100%;height:100%;
+      border-radius:var(--frame-radius);
+      overflow:hidden; background:#111;
+    }
+    .media-frame>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
     .controls{position:absolute;right:16px;bottom:16px;z-index:5;display:flex;gap:8px}
     .btn{width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;cursor:pointer}
     .btn:hover{background:rgba(0,0,0,.8)}
-
-    /* Keywords */
-    .hero-content{position:relative;z-index:2;width:100%;padding:0 3%}
+    .hero-content{position:absolute;inset:auto 0 8% 0;z-index:2;width:100%;padding:0 3%}
     .kw{display:flex;flex-direction:column;gap:6px;transform:translateY(16px);opacity:0;animation:kwIn .8s ease-out .2s forwards}
     .kw div{font-size:clamp(1.4rem,4.2vw,2.4rem);line-height:1.15;font-weight:600}
     @keyframes kwIn{to{transform:translateY(0);opacity:1}}
 
-    /* PROJECTS */
-    #projects{padding:80px 2% 110px;background:#000}
-    .projects{width:100%;display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
-    .proj{display:contents}
-    @media (max-width: 980px){ .projects{grid-template-columns:1fr} }
-    .card{background:#0b0b0b;border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;position:relative}
-    .mv-wrap{position:relative;min-height:480px}
-    .mv-wrap model-viewer{width:100%;height:100%;min-height:480px;background:#111}
-    /* Hotspot (follows part coordinates) */
-    .hotspot-btn{
-      width:42px;height:42px;border-radius:50%;
-      border:1px solid rgba(255,255,255,.22);
-      background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;
-      cursor:pointer
+    /* PROJECTS：两行（每行左模型右描述）；模型窗口无描边 */
+    #projects{padding:var(--gap); margin-top:calc(-1 * var(--gap)); background:#000}
+    .projects{display:grid;grid-template-columns:1fr;gap:var(--gap);} /* 两个项目按行排列 */
+    .proj{display:grid;grid-template-columns:1.2fr .8fr;gap:var(--gap);}
+    @media (max-width: 640px){ .proj{grid-template-columns:1fr} }
+
+    .card{background:transparent;border:none;border-radius:var(--frame-radius);overflow:hidden;padding:var(--gap);}
+    .mv-frame{position:relative;width:100%;height:100%;border-radius:var(--frame-radius);overflow:hidden;background:#111;min-height:420px;}
+    .mv-frame model-viewer{width:100%;height:100%;background:#111}
+
+    .info{
+      background:#0b0b0b; /* 描述窗口无描边 */
+      border:none;
+      border-radius:12px;
+      padding:18px;display:flex;flex-direction:column;gap:10px
     }
-    .hotspot-btn:hover{background:rgba(0,0,0,.8)}
-    .info{background:#0b0b0b;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
-    .info h3{font-size:1.25rem;margin-bottom:10px;white-space:nowrap}
+    .info h3{font-size:1.25rem;white-space:nowrap}
     .tags{display:flex;flex-wrap:wrap;gap:8px}
     .tag{font-size:.9rem;padding:6px 10px;border:1px solid rgba(255,255,255,.18);border-radius:999px}
 
-    /* ABOUT portrait: enlarge a bit */
+    /* ABOUT：portrait 背景可见 */
     #about{position:relative;padding:100px 3%;background:#000}
     #about::before{
       content:"";position:absolute;inset:0;
       background:url('assets/portrait.png') center / contain no-repeat;
-      transform:scale(1.18); /* 放大一些 */
-      transform-origin:center;
-      opacity:1; /* 100% 可见 */
-      pointer-events:none;
+      opacity:1;pointer-events:none;z-index:0;
     }
-    #about .sec{position:relative;max-width:900px;margin:0 auto}
+    #about .sec{position:relative;z-index:1;max-width:900px;margin:0 auto}
     #about .sec h2{font-size:1.8rem;margin-bottom:12px}
     #about .sec p{font-size:1rem;opacity:.95}
 
@@ -158,43 +156,43 @@
     <a href="#contact" data-i18n="nav_contact">Kontakt</a>
   </div>
 
-  <!-- HERO 1 (loop) -->
+  <!-- HERO 1 -->
   <section class="hero" id="home">
-    <video muted loop playsinline id="v1">
-      <source src="assets/Hero_2048x1080.mp4" type="video/mp4">
-    </video>
-    <div class="controls"><button class="btn" id="m1"><i class="fas fa-volume-mute"></i></button></div>
-    <div class="hero-content">
-      <div class="kw">
-        <div data-i18n="kw1_1">Innovatives Design</div>
-        <div data-i18n="kw1_2">Technologieintegration</div>
-        <div data-i18n="kw1_3">Benutzererlebnis</div>
+    <div class="media-frame">
+      <video muted playsinline loop id="v1"></video>
+      <div class="controls"><button class="btn" id="m1"><i class="fas fa-volume-mute"></i></button></div>
+      <div class="hero-content">
+        <div class="kw">
+          <div data-i18n="kw1_1">Innovatives Design</div>
+          <div data-i18n="kw1_2">Technologieintegration</div>
+          <div data-i18n="kw1_3">Benutzererlebnis</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- HERO 2 (loop) -->
+  <!-- HERO 2 -->
   <section class="hero2" id="hero2">
-    <video muted loop playsinline id="v2">
-      <source src="assets/Hero_2_2048x1080.mp4" type="video/mp4">
-    </video>
-    <div class="controls"><button class="btn" id="m2"><i class="fas fa-volume-mute"></i></button></div>
-    <div class="hero-content">
-      <div class="kw">
-        <div data-i18n="kw2_1">Skizzen · ABS-Modelle</div>
-        <div data-i18n="kw2_2">CNC-Metall · Glasherstellung</div>
-        <div data-i18n="kw2_3">Programmierung · KI-Training · Montage</div>
+    <div class="media-frame">
+      <video muted playsinline loop id="v2"></video>
+      <div class="controls"><button class="btn" id="m2"><i class="fas fa-volume-mute"></i></button></div>
+      <div class="hero-content">
+        <div class="kw">
+          <div data-i18n="kw2_1">Skizzen · ABS-Modelle</div>
+          <div data-i18n="kw2_2">CNC-Metall · Glasherstellung</div>
+          <div data-i18n="kw2_3">Programmierung · KI-Training · Montage</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- PROJECTS -->
+  <!-- PROJECTS：两行（每行左模型右描述） -->
   <section id="projects">
     <div class="projects">
-      <!-- SGB -->
+      <!-- Row 1: SGB -->
       <div class="proj">
         <div class="card">
-          <div class="mv-wrap">
+          <div class="mv-frame">
             <model-viewer
               id="mv-sgb"
               src="assets/sgb.glb"
@@ -202,15 +200,6 @@
               auto-rotate
               rotation-per-second="10deg"
               ar="false">
-              <!-- hotspot 跟随“相机”节点 -->
-              <button slot="hotspot-sgb-cam"
-                      class="hotspot-btn"
-                      id="hot-sgb"
-                      data-node="相机"
-                      data-visibility-attribute="visible"
-                      title="xiangji">
-                <i class="fa-solid fa-camera"></i>
-              </button>
             </model-viewer>
           </div>
         </div>
@@ -224,10 +213,10 @@
         </div>
       </div>
 
-      <!-- Tractor -->
+      <!-- Row 2: Tractor -->
       <div class="proj">
         <div class="card">
-          <div class="mv-wrap">
+          <div class="mv-frame">
             <model-viewer
               id="mv-tractor"
               src="assets/tractor.glb"
@@ -235,15 +224,6 @@
               auto-rotate
               rotation-per-second="10deg"
               ar="false">
-              <!-- hotspot 跟随“achse”节点 -->
-              <button slot="hotspot-tractor-achse"
-                      class="hotspot-btn"
-                      id="hot-tractor"
-                      data-node="achse"
-                      data-visibility-attribute="visible"
-                      title="achse / glas / handle">
-                <i class="fa-solid fa-tractor"></i>
-              </button>
             </model-viewer>
           </div>
         </div>
@@ -259,7 +239,7 @@
     </div>
   </section>
 
-  <!-- ABOUT -->
+  <!-- ABOUT（portrait 背景可见） -->
   <section id="about">
     <div class="sec">
       <h2 data-i18n="about_t">Über mich</h2>
@@ -282,7 +262,7 @@
   <!-- model-viewer -->
   <script type="module" src="https://unpkg.com/@google/model-viewer@latest/dist/model-viewer.min.js"></script>
   <script>
-    /* ===== i18n (保持上一版逻辑，不改动未要求部分) ===== */
+    /* ===== i18n（原样） ===== */
     const I18N = {
       de:{lang:'DE',name:'Yuanqing Xie',
         nav_home:'Startseite',nav_projects:'Projekte',nav_about:'Über mich',nav_contact:'Kontakt',
@@ -324,154 +304,107 @@
       ['kw1_1','kw1_2','kw1_3','kw2_1','kw2_2','kw2_3'].forEach(k=>{
         const el = document.querySelector(`[data-i18n="${k}"]`); if(el) el.textContent = t[k];
       });
-      document.getElementById('p1_title').textContent = t.p1_title;
-      const p1 = document.getElementById('p1_tags'); p1.innerHTML=''; t.p1_tags.forEach(s=>{const span=document.createElement('span');span.className='tag';span.textContent=s;p1.appendChild(span);});
-      document.getElementById('p2_title').textContent = t.p2_title;
-      const p2 = document.getElementById('p2_tags'); p2.innerHTML=''; t.p2_tags.forEach(s=>{const span=document.createElement('span');span.className='tag';span.textContent=s;p2.appendChild(span);});
-
+      const p1 = document.getElementById('p1_title'); if(p1) p1.textContent = t.p1_title;
+      const p1t = document.getElementById('p1_tags'); if(p1t){ p1t.innerHTML=''; t.p1_tags.forEach(s=>{const span=document.createElement('span');span.className='tag';span.textContent=s;p1t.appendChild(span);}); }
+      const p2 = document.getElementById('p2_title'); if(p2) p2.textContent = t.p2_title;
+      const p2t = document.getElementById('p2_tags'); if(p2t){ p2t.innerHTML=''; t.p2_tags.forEach(s=>{const span=document.createElement('span');span.className='tag';span.textContent=s;p2t.appendChild(span);}); }
       document.querySelector('[data-i18n="about_t"]').textContent = t.about_t;
       document.getElementById('about_txt').innerHTML = t.about_txt;
       document.querySelector('[data-i18n="contact_t"]').textContent = t.contact_t;
       document.getElementById('contact_txt').innerHTML = t.contact_txt;
-
       document.documentElement.setAttribute('data-lang', lang);
       document.documentElement.lang = (lang==='zh'?'zh':lang);
       localStorage.setItem('lang', lang);
     }
 
-    // Language dropdown
-    const langBox = document.getElementById('lang');
-    const langBtn = document.getElementById('langBtn');
-    const langMenu = document.getElementById('langMenu');
-    langBtn.addEventListener('click', e=>{ e.stopPropagation(); langBox.classList.toggle('open'); });
-    langMenu.addEventListener('click', e=>{
-      const item = e.target.closest('.lang-item'); if(!item) return;
-      langBox.classList.remove('open'); applyLang(item.dataset.lang);
+    // ===== 交互 =====
+    document.addEventListener('DOMContentLoaded', () => {
+      /* 语言切换 */
+      const langBox = document.getElementById('lang');
+      const langBtn = document.getElementById('langBtn');
+      const langMenu = document.getElementById('langMenu');
+      langBtn.addEventListener('click', e=>{ e.stopPropagation(); langBox.classList.toggle('open'); });
+      langMenu.addEventListener('click', e=>{
+        const item = e.target.closest('.lang-item'); if(!item) return;
+        langBox.classList.remove('open'); applyLang(item.dataset.lang);
+      });
+      document.addEventListener('click', ()=>langBox.classList.remove('open'));
+      applyLang(localStorage.getItem('lang') || 'de');
+
+      /* 移动端菜单 */
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobileMenu');
+      hamburger.addEventListener('click', ()=> mobileMenu.classList.toggle('show'));
+      mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=> mobileMenu.classList.remove('show')));
+
+      /* ===== 视频：窄屏切换竖版；切换后若在视口内自动播放；仍只播放当前在视口的那段 ===== */
+      const SRC_L1 = 'assets/Hero_2048x1080.mp4';
+      const SRC_L2 = 'assets/Hero_2_2048x1080.mp4';
+      const SRC_P1 = 'assets/Hero_1080x2048.mp4';
+      const SRC_P2 = 'assets/Hero_2_1080x2048.mp4';
+      const MQ_NARROW = window.matchMedia('(max-width: 640px)');
+
+      const v1 = document.getElementById('v1');
+      const v2 = document.getElementById('v2');
+
+      const firstSec = document.querySelector('.hero');
+      const secondSec = document.querySelector('.hero2');
+      function inView(sec){
+        const r = sec.getBoundingClientRect();
+        return r.top < window.innerHeight*0.65 && r.bottom > window.innerHeight*0.35;
+      }
+
+      function assignSrc(videoEl, src, sec){
+        if(videoEl.getAttribute('data-src') === src) return;
+        videoEl.pause();
+        videoEl.src = src;
+        videoEl.setAttribute('data-src', src);
+        videoEl.load();
+        videoEl.addEventListener('loadeddata', function handler(){
+          videoEl.removeEventListener('loadeddata', handler);
+          if(inView(sec)){ videoEl.play().catch(()=>{}); }
+          else { videoEl.pause(); }
+        });
+      }
+
+      function setVideoSources(){
+        const portrait = MQ_NARROW.matches;
+        assignSrc(v1, portrait ? SRC_P1 : SRC_L1, firstSec);
+        assignSrc(v2, portrait ? SRC_P2 : SRC_L2, secondSec);
+      }
+      setVideoSources();
+      MQ_NARROW.addEventListener('change', setVideoSources);
+      window.addEventListener('orientationchange', setVideoSources);
+      window.addEventListener('resize', setVideoSources);
+
+      function wireVideo(sec, videoEl, btnId){
+        const b = document.getElementById(btnId);
+        videoEl.muted = true;
+        const upd = ()=> b.innerHTML = videoEl.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+        b.addEventListener('click', ()=>{ videoEl.muted=!videoEl.muted; upd(); });
+        upd();
+        return {sec, v:videoEl};
+      }
+      const V1 = wireVideo(firstSec, v1, 'm1');
+      const V2 = wireVideo(secondSec, v2, 'm2');
+
+      const io = new IntersectionObserver(entries=>{
+        entries.forEach(e=>{
+          const vid = e.target.querySelector('video'); if(!vid) return;
+          if(e.isIntersecting) vid.play().catch(()=>{});
+          else { vid.pause(); vid.muted = true; }
+        });
+      },{threshold:.35});
+      [V1.sec, V2.sec].forEach(s=>io.observe(s));
+
+      // 初始化：当前在视口内的自动播放
+      [V1, V2].forEach(({sec, v})=>{
+        if(inView(sec)) v.play().catch(()=>{});
+        else { v.pause(); v.muted = true; }
+      });
+
+      /* 按你的要求：已删除两个模型的动画与热点相关代码 */
     });
-    document.addEventListener('click', ()=>langBox.classList.remove('open'));
-
-    // Mobile menu
-    const hamburger = document.getElementById('hamburger');
-    const mobileMenu = document.getElementById('mobileMenu');
-    hamburger.addEventListener('click', ()=> mobileMenu.classList.toggle('show'));
-    mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=> mobileMenu.classList.remove('show')));
-
-    // Videos (loop; play only in view)
-    function wireVideo(sectionId, videoId, btnId){
-      const sec = document.getElementById(sectionId);
-      const v = document.getElementById(videoId);
-      const b = document.getElementById(btnId);
-      v.muted = true;
-      const upd = ()=> b.innerHTML = v.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
-      b.addEventListener('click', ()=>{ v.muted=!v.muted; upd(); }); upd();
-      return {sec, v};
-    }
-    const V1 = wireVideo('home','v1','m1');
-    const V2 = wireVideo('hero2','v2','m2');
-    const io = new IntersectionObserver(entries=>{
-      entries.forEach(e=>{
-        const vid = e.target.querySelector('video');
-        if(!vid) return;
-        if(e.isIntersecting) vid.play().catch(()=>{});
-        else { vid.pause(); vid.muted = true; }
-      });
-    },{threshold:.4});
-    [V1.sec, V2.sec].forEach(s=>io.observe(s));
-
-    // ===== Model animations: default NOT running; toggle forward once / reverse once; keep state =====
-    // Helper: play one clip with direction; hold end/start when finished
-    function playClipOnceHold(mv, clipName, direction){
-      mv.animationName = clipName;
-      try{ mv.timeScale = direction >= 0 ? 1 : -1; }catch(e){}
-      if(direction >= 0){
-        // 正放从 0 开始
-        mv.currentTime = 0;
-      } else {
-        // 倒放：从当前状态开始（不强制跳到尾帧）
-        // 如果当前恰在起点，为保证可见效果，可向尾帧轻推；但按你的要求这里不做跳转
-      }
-      try{ mv.play({repetitions:1}); }catch(e){ mv.play(); }
-
-      const finish = ()=>{
-        mv.removeEventListener('animation-finish', finish);
-        // 保持状态：正放停在尾帧；倒放停在首帧
-        try{
-          const d = mv.model?.animationClips?.find(c=>c.name===clipName)?.duration;
-          if(typeof d === 'number'){
-            mv.pause();
-            mv.currentTime = direction >= 0 ? d : 0;
-          } else {
-            mv.pause();
-          }
-        }catch(e){ mv.pause(); }
-      };
-      mv.addEventListener('animation-finish', finish);
-    }
-
-    // SGB: hotspot follows node "相机"
-    (function(){
-      const mv = document.getElementById('mv-sgb');
-      const hot = document.getElementById('hot-sgb');
-      const CLIP = 'xiangji动作';
-      let forward = true;
-      hot.addEventListener('click', ()=>{
-        playClipOnceHold(mv, CLIP, forward ? 1 : -1);
-        forward = !forward;
-      });
-    })();
-
-    // Tractor: hotspot follows node "achse"; play 3 clips simultaneously; then reverse simultaneously
-    (function(){
-      const mv = document.getElementById('mv-tractor');
-      const hot = document.getElementById('hot-tractor');
-      const CLIPS = ['achse动作','glas动作','handle动作'];
-      let forward = true;
-
-      function playSet(direction){
-        if(typeof mv.clearAppendedAnimations === 'function'){ try{ mv.clearAppendedAnimations(); }catch(e){} }
-        // 尝试并行追加（若版本支持）
-        let appended = false;
-        if(typeof mv.appendAnimation === 'function'){
-          appended = true;
-          CLIPS.forEach(name=>{
-            try{ mv.appendAnimation(name, {repetitions:1, timeScale: direction>=0?1:-1}); }catch(e){ appended=false; }
-          });
-        }
-        // 设置主动画（用于监听结束与保持状态）
-        const primary = CLIPS[0];
-        mv.animationName = primary;
-        try{ mv.timeScale = direction>=0 ? 1 : -1; }catch(e){}
-        if(direction>=0){
-          mv.currentTime = 0;
-        } // 倒放从当前状态开始
-
-        try{ mv.play({repetitions:1}); }catch(e){ mv.play(); }
-
-        const finish = ()=>{
-          mv.removeEventListener('animation-finish', finish);
-          // 保持集合终态/始态
-          try{
-            const d = mv.model?.animationClips?.find(c=>c.name===primary)?.duration;
-            if(typeof d === 'number'){
-              mv.pause();
-              mv.currentTime = direction>=0 ? d : 0;
-            } else {
-              mv.pause();
-            }
-          }catch(e){ mv.pause(); }
-          if(typeof mv.clearAppendedAnimations === 'function'){ try{ mv.clearAppendedAnimations(); }catch(e){} }
-        };
-        mv.addEventListener('animation-finish', finish);
-      }
-
-      hot.addEventListener('click', ()=>{
-        playSet(forward ? 1 : -1);
-        forward = !forward;
-      });
-    })();
-
-    // Init language
-    applyLang(localStorage.getItem('lang') || 'de');
   </script>
 </body>
 </html>
