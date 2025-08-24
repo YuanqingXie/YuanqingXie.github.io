@@ -31,7 +31,7 @@
       font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
     }
 
-    /* NAV（顶部留 5px 间距：导航整体下移 gap） */
+    /* NAV（始终可见，不参与淡入淡出） */
     .navbar{
       position:fixed;left:0;right:0;top:var(--gap);height:var(--nav-h);
       display:flex;align-items:center;justify-content:space-between;
@@ -65,7 +65,7 @@
     .mobile-menu.show{display:flex}
     .mobile-menu a{color:#fff;text-decoration:none;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
 
-    /* HERO（视频 cover；无描边倒角框；间距= --gap） */
+    /* HERO */
     .hero,.hero2{
       height:100vh;position:relative;display:flex;align-items:center;justify-content:center;background:#000;
     }
@@ -82,13 +82,12 @@
     .btn{width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;cursor:pointer}
     .btn:hover{background:rgba(0,0,0,.8)}
     .hero-content{position:absolute;inset:auto 0 8% 0;z-index:2;width:100%;padding:0 3%}
-    .kw{display:flex;flex-direction:column;gap:6px;transform:translateY(16px);opacity:0;animation:kwIn .8s ease-out .2s forwards}
+    .kw{display:flex;flex-direction:column;gap:6px}
     .kw div{font-size:clamp(1.4rem,4.2vw,2.4rem);line-height:1.15;font-weight:600}
-    @keyframes kwIn{to{transform:translateY(0);opacity:1}}
 
-    /* PROJECTS：两行（每行左模型右描述）；模型窗口无描边 */
+    /* PROJECTS */
     #projects{padding:var(--gap); margin-top:calc(-1 * var(--gap)); background:#000}
-    .projects{display:grid;grid-template-columns:1fr;gap:var(--gap);} /* 两个项目按行排列 */
+    .projects{display:grid;grid-template-columns:1fr;gap:var(--gap);}
     .proj{display:grid;grid-template-columns:1.2fr .8fr;gap:var(--gap);}
     @media (max-width: 640px){ .proj{grid-template-columns:1fr} }
 
@@ -97,34 +96,60 @@
     .mv-frame model-viewer{width:100%;height:100%;background:#111}
 
     .info{
-      background:#0b0b0b; /* 描述窗口无描边 */
-      border:none;
-      border-radius:12px;
-      padding:18px;display:flex;flex-direction:column;gap:10px
+      background:#0b0b0b; border:none;border-radius:12px;
+      padding:18px;display:flex;flex-direction:column;gap:10px;
+      /* 让四个卡片中缝一致：右侧卡片上下外边距与左侧 .card 的内边距一致 */
+      margin-block: var(--gap);
     }
     .info h3{font-size:1.25rem;white-space:nowrap}
+    .info p{font-size:1rem;opacity:.96}
     .tags{display:flex;flex-wrap:wrap;gap:8px}
     .tag{font-size:.9rem;padding:6px 10px;border:1px solid rgba(255,255,255,.18);border-radius:999px}
 
-    /* ABOUT：portrait 背景可见 */
-    #about{position:relative;padding:100px 3%;background:#000}
+    /* ABOUT / CONTACT 左对齐到视频文案边缘（3%） */
+    #about{position:relative;padding:100px 0;background:#000}
     #about::before{
       content:"";position:absolute;inset:0;
-      background:url('assets/portrait.png') center / contain no-repeat;
+      /* 放大靠右且不裁切：按高度适配，始终完整显示 */
+      background:url('assets/portrait.png') right center / auto 100% no-repeat;
       opacity:1;pointer-events:none;z-index:0;
     }
-    #about .sec{position:relative;z-index:1;max-width:900px;margin:0 auto}
-    #about .sec h2{font-size:1.8rem;margin-bottom:12px}
-    #about .sec p{font-size:1rem;opacity:.95}
+    #about .sec, #contact .sec{
+      position:relative;z-index:1;width:100%;
+      padding-left:3%; padding-right:3%;
+      text-align:left; margin:0;
+      max-width:none;
+    }
+    #about .sec h2,#contact .sec h2{font-size:1.8rem;margin-bottom:12px}
+    #about .sec p,#contact .sec p{
+      font-size:1rem;opacity:.95;
+      /* 桌面端至少 ~5 行 */
+      max-width:60ch;
+    }
+    /* 移动端：关于我不再使用背景图；改为段落下方插入整图 */
+    .about-portrait{display:none;width:100%;height:auto;margin-top:14px;border-radius:10px}
+    @media (max-width: 640px){
+      #about::before{content:none;}
+      .about-portrait{display:block;}
+    }
 
-    #contact{padding:80px 3%}
-    #contact .sec{max-width:900px;margin:0 auto}
-    #contact .sec h2{font-size:1.8rem;margin-bottom:12px}
-    #contact .sec p{font-size:1rem;opacity:.95}
+    #contact{padding:80px 0}
+
+    /* 英文版两处文字两端对齐（右边缘对齐） */
+    html[data-lang="en"] #about .sec p,
+    html[data-lang="en"] .info p{ text-align:justify; text-justify:inter-word; }
+
+    /* 德语版本：模型右侧段落两端对齐 + 关于我段落两端对齐 */
+    html[data-lang="de"] .info p{ text-align:justify; text-justify:inter-word; }
+    html[data-lang="de"] #about .sec p{ text-align:justify; text-justify:inter-word; }
+
+    /* ===== 区块淡入（在视口内的每个区段都淡入） ===== */
+    .fade-text{opacity:0; transition:opacity .45s ease-out;}
+    [data-inview="1"] .fade-text{opacity:1;}
   </style>
 </head>
 <body>
-  <!-- NAV -->
+  <!-- NAV（始终可见） -->
   <nav class="navbar">
     <div class="logo-wrap">
       <img class="logo" src="assets/logo.svg" alt="logo">
@@ -157,37 +182,38 @@
   </div>
 
   <!-- HERO 1 -->
-  <section class="hero" id="home">
+  <section class="hero" id="home" data-section>
     <div class="media-frame">
       <video muted playsinline loop id="v1"></video>
       <div class="controls"><button class="btn" id="m1"><i class="fas fa-volume-mute"></i></button></div>
       <div class="hero-content">
         <div class="kw">
-          <div data-i18n="kw1_1">Innovatives Design</div>
-          <div data-i18n="kw1_2">Technologieintegration</div>
-          <div data-i18n="kw1_3">Benutzererlebnis</div>
+          <!-- DE/EN 全大写 -->
+          <div class="fade-text" data-i18n="kw1_1">INNOVATIVES DESIGN</div>
+          <div class="fade-text" data-i18n="kw1_2">TECHNOLOGIEINTEGRATION</div>
+          <div class="fade-text" data-i18n="kw1_3">BENUTZERERLEBNIS</div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- HERO 2 -->
-  <section class="hero2" id="hero2">
+  <section class="hero2" id="hero2" data-section>
     <div class="media-frame">
       <video muted playsinline loop id="v2"></video>
       <div class="controls"><button class="btn" id="m2"><i class="fas fa-volume-mute"></i></button></div>
       <div class="hero-content">
         <div class="kw">
-          <div data-i18n="kw2_1">Skizzen · ABS-Modelle</div>
-          <div data-i18n="kw2_2">CNC-Metall · Glasherstellung</div>
-          <div data-i18n="kw2_3">Programmierung · KI-Training · Montage</div>
+          <div class="fade-text" data-i18n="kw2_1">VISION</div>
+          <div class="fade-text" data-i18n="kw2_2">ENGINEERING</div>
+          <div class="fade-text" data-i18n="kw2_3">REALISIERUNG</div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- PROJECTS：两行（每行左模型右描述） -->
-  <section id="projects">
+  <section id="projects" data-section>
     <div class="projects">
       <!-- Row 1: SGB -->
       <div class="proj">
@@ -204,12 +230,13 @@
           </div>
         </div>
         <div class="info">
-          <h3 id="p1_title">智能手势识别盒子</h3>
-          <div class="tags" id="p1_tags">
-            <span class="tag">手势跟踪</span>
-            <span class="tag">机器学习</span>
-            <span class="tag">人机交互</span>
-          </div>
+          <h3 class="fade-text" id="p1_title">智能手势识别盒子</h3>
+          <div class="tags" id="p1_tags"></div>
+          <p class="fade-text" id="p1_desc">
+            基于机器学习的手势识别与追踪系统，通过摄像头捕捉手势并映射为点击、滚轮与拖拽等操作，
+            支持无接触的人机交互。项目覆盖从数据采集、模型训练到硬件集成与应用联动，面向无障碍、
+            智能家居与高效工作流等场景，强调自然、直观与低学习成本的交互体验。
+          </p>
         </div>
       </div>
 
@@ -228,90 +255,127 @@
           </div>
         </div>
         <div class="info">
-          <h3 id="p2_title">概念拖拉机</h3>
-          <div class="tags" id="p2_tags">
-            <span class="tag">能源效率</span>
-            <span class="tag">多功能作业</span>
-            <span class="tag">自动驾驶</span>
-          </div>
+          <h3 class="fade-text" id="p2_title">概念拖拉机</h3>
+          <div class="tags" id="p2_tags"></div>
+          <p class="fade-text" id="p2_desc">
+            面向未来农业的拖拉机与挂接系统概念，重点在能效提升与多工序协同：以模块化作业单元减少换装成本，
+            结合 GPS 与辅助自动驾驶降低重复行驶；在结构与座舱的人机工学上优化振动与噪声，提升长时间作业舒适性，
+            以更低能耗达成高效率与高可靠性的整机方案。
+          </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ABOUT（portrait 背景可见） -->
-  <section id="about">
+  <!-- ABOUT（移动端图片放在文字下面；桌面端右侧大图背景） -->
+  <section id="about" data-section>
     <div class="sec">
-      <h2 data-i18n="about_t">Über mich</h2>
-      <p id="about_txt">
-        Industrie-Designer mit Fokus auf intelligente Produkte und Industrieausrüstung.
-        Von Idee bis Prototyp (Skizze, ABS, CNC, Glas) sowie Programmierung & KI-Interaktionen.
-        Nutzererlebnis & Herstellbarkeit im Fokus.
-      </p>
+      <h2 class="fade-text" data-i18n="about_t">Über mich</h2>
+      <p class="fade-text" id="about_txt"></p>
+      <!-- 仅移动端显示（CSS 控制），作为文字下方的整图 -->
+      <img class="about-portrait" src="assets/portrait.png" alt="Portrait">
     </div>
   </section>
 
-  <!-- CONTACT -->
-  <section id="contact">
+  <!-- CONTACT（左对齐） -->
+  <section id="contact" data-section>
     <div class="sec">
-      <h2 data-i18n="contact_t">Kontakt</h2>
-      <p id="contact_txt">E-Mail: <a href="mailto:hello@yuanqingxie.com">hello@yuanqingxie.com</a></p>
+      <h2 class="fade-text" data-i18n="contact_t">Kontakt</h2>
+      <p class="fade-text" id="contact_txt">E-Mail: <a href="mailto:xieyuantsing@gmail.com">xieyuantsing@gmail.com</a></p>
     </div>
   </section>
 
   <!-- model-viewer -->
   <script type="module" src="https://unpkg.com/@google/model-viewer@latest/dist/model-viewer.min.js"></script>
   <script>
-    /* ===== i18n（原样） ===== */
+    /* ===== 多语言文案 ===== */
     const I18N = {
       de:{lang:'DE',name:'Yuanqing Xie',
         nav_home:'Startseite',nav_projects:'Projekte',nav_about:'Über mich',nav_contact:'Kontakt',
-        kw1_1:'Innovatives Design',kw1_2:'Technologieintegration',kw1_3:'Benutzererlebnis',
-        kw2_1:'Skizzen · ABS-Modelle',kw2_2:'CNC-Metall · Glasherstellung',kw2_3:'Programmierung · KI-Training · Montage',
-        p1_title:'Intelligente Gestenerkennungsbox',p1_tags:['Gestentracking','Maschinelles Lernen','Mensch-Computer-Interaktion'],
-        p2_title:'Konzept-Traktor',p2_tags:['Energieeffizienz','Mehrzweckarbeit','Autonomes Fahren'],
+        kw1_1:'INNOVATIVES DESIGN',kw1_2:'TECHNOLOGIEINTEGRATION',kw1_3:'BENUTZERERLEBNIS',
+        kw2_1:'VISION', kw2_2:'ENGINEERING', kw2_3:'REALISIERUNG',
+
+        p1_title:'Intelligente Gestenerkennungsbox',
+        p1_tags:['Gestentracking','Maschinelles Lernen','Mensch-Computer-Interaktion'],
+        p1_desc:'Box zur Gestenerkennung und -verfolgung auf Basis von Machine Learning. Handbewegungen werden in Klick, Scrollen und Ziehen übersetzt – kontaktlos und intuitiv. Der Prototyp umfasst Datenerfassung, Modelltraining, Hardware-Integration und App-Kopplung und eignet sich für Barrierefreiheit, Smart Home und effiziente Workflows.',
+
+        p2_title:'Konzept-Traktor',
+        p2_tags:['Energieeffizienz','Mehrzweckarbeit','Autonomes Fahren'],
+        p2_desc:'Konzept eines Traktors für die Landwirtschaft von morgen mit Fokus auf Energieeffizienz und Mehrfachprozesse. Modulare Anbaugeräte reduzieren Rüstzeiten; GPS und assistierte Autonomie verringern Doppelüberfahrten. Optimierte Struktur und Kabinen-Ergonomie senken Vibration und Lärm für komfortablen Langzeiteinsatz.',
+
         about_t:'Über mich',
-        about_txt:'Industriedesigner mit Fokus auf intelligente Produkte und Industrieausrüstung. Von Idee bis Prototyp (Skizze, ABS, CNC, Glas) sowie Programmierung & KI-Interaktionen. Nutzererlebnis & Herstellbarkeit im Fokus.',
-        contact_t:'Kontakt',contact_txt:'E-Mail: <a href="mailto:hello@yuanqingxie.com">hello@yuanqingxie.com</a>'},
+        about_txt:'Ich bin ein interdisziplinärer Industriedesigner und Ingenieur, der innovative Konzepte end-to-end realisiert – von Design Thinking und Präzisions­technik bis Programmierung und KI-Anwendungen. Ich habe an der Sichuan Fine Arts Institute (Bachelor) und der Universität Kassel (Master) studiert und war bei Beckhoff Automation tätig. Meine Kompetenzen umfassen Industriedesign, Grafikdesign, 3D-Animation und angewandte KI. Ich verbinde Ästhetik mit Spitzentechnologie und entwickle vollständige Produktlösungen – vom digitalen Modell bis zum physischen Objekt.',
+        contact_t:'Kontakt',
+        contact_txt:'E-Mail: <a href="mailto:xieyuantsing@gmail.com">xieyuantsing@gmail.com</a>'},
+
       en:{lang:'EN',name:'Yuanqing Xie',
         nav_home:'Home',nav_projects:'Projects',nav_about:'About',nav_contact:'Contact',
-        kw1_1:'Innovative Design',kw1_2:'Technology Integration',kw1_3:'User Experience',
-        kw2_1:'Sketches · ABS Models',kw2_2:'CNC Metal · Glassmaking',kw2_3:'Programming · AI Training · Assembly',
-        p1_title:'Smart Gesture Recognition Box',p1_tags:['Gesture Tracking','Machine Learning','HCI'],
-        p2_title:'Concept Tractor',p2_tags:['Energy Efficiency','Multi-purpose Work','Autonomous Driving'],
+        kw1_1:'INNOVATIVE DESIGN',kw1_2:'TECHNOLOGY INTEGRATION',kw1_3:'USER EXPERIENCE',
+        kw2_1:'VISION', kw2_2:'ENGINEERING', kw2_3:'REALISATION',
+
+        p1_title:'Smart Gesture Recognition Box',
+        p1_tags:['Gesture Tracking','Machine Learning','HCI'],
+        p1_desc:'A machine-learning gesture-recognition and tracking box that maps hand movements to click, scroll and drag — contactless and intuitive. The prototype covers data capture, model training, hardware integration and app linkage, targeting accessibility, smart-home control and efficient workflows.',
+
+        p2_title:'Concept Tractor',
+        p2_tags:['Energy Efficiency','Multi-purpose Work','Autonomous Driving'],
+        p2_desc:'A concept tractor for future agriculture focused on energy efficiency and multi-process coordination. Modular attachments reduce changeovers; GPS and assisted autonomy cut redundant passes. Optimized structure and cab ergonomics lower vibration and noise for long-hour comfort.',
+
         about_t:'About',
-        about_txt:'Industrial designer focusing on intelligent products and industrial equipment. From concept to prototype (sketch, ABS, CNC, glass) plus coding & AI interactions. Strong UX and manufacturability.',
-        contact_t:'Contact',contact_txt:'Email: <a href="mailto:hello@yuanqingxie.com">hello@yuanqingxie.com</a>'},
+        about_txt:'I am an interdisciplinary industrial designer and engineer focused on turning innovative concepts into end-to-end realities — from design thinking and precision engineering to programming and AI. I hold a BFA from Sichuan Fine Arts Institute and an M.A. from the University of Kassel, and previously worked at Beckhoff Automation. My capabilities span industrial design, graphic design, 3D animation and applied AI. I combine aesthetics with advanced technology to deliver complete product solutions from digital models to physical artifacts.',
+        contact_t:'Contact',
+        contact_txt:'Email: <a href="mailto:xieyuantsing@gmail.com">xieyuantsing@gmail.com</a>'},
+
       zh:{lang:'中文',name:'谢原卿',
         nav_home:'首页',nav_projects:'项目',nav_about:'关于我',nav_contact:'联系',
         kw1_1:'创新设计',kw1_2:'技术整合',kw1_3:'用户体验',
-        kw2_1:'草图 · ABS模型',kw2_2:'CNC金属 · 玻璃制作',kw2_3:'编程 · AI训练 · 组装',
-        p1_title:'智能手势识别盒子',p1_tags:['手势追踪','机器学习','人机交互'],
-        p2_title:'概念拖拉机',p2_tags:['能效','多用途作业','自动驾驶'],
+        kw2_1:'创意构想', kw2_2:'工程实现', kw2_3:'成就卓越',
+
+        p1_title:'智能手势识别盒子',
+        p1_tags:['手势追踪','机器学习','人机交互'],
+        p1_desc:'基于机器学习的手势识别与追踪系统，通过摄像头捕捉手势并映射为点击、滚轮与拖拽等操作，支持无接触的人机交互。项目覆盖从数据采集、模型训练到硬件集成与应用联动，面向无障碍、智能家居与高效工作流等场景，强调自然、直观与低学习成本的交互体验。',
+
+        p2_title:'概念拖拉机',
+        p2_tags:['能效','多用途作业','自动驾驶'],
+        p2_desc:'面向未来农业的拖拉机与挂接系统概念，重点在能效提升与多工序协同：以模块化作业单元减少换装成本，结合 GPS 与辅助自动驾驶降低重复行驶；在结构与座舱的人机工学上优化振动与噪声，提升长时间作业舒适性，以更低能耗达成高效率与高可靠性的整机方案。',
+
         about_t:'关于我',
-        about_txt:'工业设计师，专注智能产品与工业设备。从概念到原型（草图、ABS、CNC、玻璃）以及编程与AI交互，兼顾用户体验与可制造性。',
-        contact_t:'联系',contact_txt:'邮箱：<a href="mailto:hello@yuanqingxie.com">hello@yuanqingxie.com</a>'}
+        about_txt:'我是一名跨学科的工业设计师与工程师，专注于将创新概念通过全流程技术实现——从设计思维、精密工程到编程与人工智能应用。我毕业于四川美术学院（本科）与德国卡塞尔大学（硕士），并曾任职于工业自动化领域的领先企业德国倍福。我的专业能力涵盖了工业设计、平面设计、3D动画与AI技术应用等多个领域。我擅长融合美学与前沿技术，致力于打造从数字模型到物理实体的完整产品解决方案。',
+        contact_t:'联系',
+        contact_txt:'邮箱：<a href="mailto:xieyuantsing@gmail.com">xieyuantsing@gmail.com</a>'}
     };
 
     function applyLang(lang){
       const t = I18N[lang] || I18N.de;
+
       document.getElementById('siteName').textContent = t.name;
       document.getElementById('langLabel').textContent = t.lang;
+
       document.querySelectorAll('[data-i18n="nav_home"]').forEach(el=>el.textContent=t.nav_home);
       document.querySelectorAll('[data-i18n="nav_projects"]').forEach(el=>el.textContent=t.nav_projects);
       document.querySelectorAll('[data-i18n="nav_about"]').forEach(el=>el.textContent=t.nav_about);
       document.querySelectorAll('[data-i18n="nav_contact"]').forEach(el=>el.textContent=t.nav_contact);
+
       ['kw1_1','kw1_2','kw1_3','kw2_1','kw2_2','kw2_3'].forEach(k=>{
         const el = document.querySelector(`[data-i18n="${k}"]`); if(el) el.textContent = t[k];
       });
+
       const p1 = document.getElementById('p1_title'); if(p1) p1.textContent = t.p1_title;
-      const p1t = document.getElementById('p1_tags'); if(p1t){ p1t.innerHTML=''; t.p1_tags.forEach(s=>{const span=document.createElement('span');span.className='tag';span.textContent=s;p1t.appendChild(span);}); }
+      const p1t = document.getElementById('p1_tags');
+      if(p1t){ p1t.innerHTML=''; t.p1_tags.forEach(s=>{const span=document.createElement('span');span.className='tag fade-text';span.textContent=s;p1t.appendChild(span);}); }
+      const p1d = document.getElementById('p1_desc'); if(p1d) p1d.innerHTML = t.p1_desc;
+
       const p2 = document.getElementById('p2_title'); if(p2) p2.textContent = t.p2_title;
-      const p2t = document.getElementById('p2_tags'); if(p2t){ p2t.innerHTML=''; t.p2_tags.forEach(s=>{const span=document.createElement('span');span.className='tag';span.textContent=s;p2t.appendChild(span);}); }
+      const p2t = document.getElementById('p2_tags');
+      if(p2t){ p2t.innerHTML=''; t.p2_tags.forEach(s=>{const span=document.createElement('span');span.className='tag fade-text';span.textContent=s;p2t.appendChild(span);}); }
+      const p2d = document.getElementById('p2_desc'); if(p2d) p2d.innerHTML = t.p2_desc;
+
       document.querySelector('[data-i18n="about_t"]').textContent = t.about_t;
       document.getElementById('about_txt').innerHTML = t.about_txt;
+
       document.querySelector('[data-i18n="contact_t"]').textContent = t.contact_t;
       document.getElementById('contact_txt').innerHTML = t.contact_txt;
+
       document.documentElement.setAttribute('data-lang', lang);
       document.documentElement.lang = (lang==='zh'?'zh':lang);
       localStorage.setItem('lang', lang);
@@ -337,36 +401,22 @@
       hamburger.addEventListener('click', ()=> mobileMenu.classList.toggle('show'));
       mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=> mobileMenu.classList.remove('show')));
 
-      /* ===== 视频：窄屏切换竖版；切换后若在视口内自动播放；仍只播放当前在视口的那段 ===== */
+      /* 视频：窄屏切竖版；切换后若在视口内自动播放；仍只播放当前可见那段 */
       const SRC_L1 = 'assets/Hero_2048x1080.mp4';
       const SRC_L2 = 'assets/Hero_2_2048x1080.mp4';
       const SRC_P1 = 'assets/Hero_1080x2048.mp4';
       const SRC_P2 = 'assets/Hero_2_1080x2048.mp4';
       const MQ_NARROW = window.matchMedia('(max-width: 640px)');
-
       const v1 = document.getElementById('v1');
       const v2 = document.getElementById('v2');
-
       const firstSec = document.querySelector('.hero');
       const secondSec = document.querySelector('.hero2');
-      function inView(sec){
-        const r = sec.getBoundingClientRect();
-        return r.top < window.innerHeight*0.65 && r.bottom > window.innerHeight*0.35;
-      }
-
+      function inView(sec){ const r = sec.getBoundingClientRect(); return r.top < window.innerHeight*0.65 && r.bottom > window.innerHeight*0.35; }
       function assignSrc(videoEl, src, sec){
         if(videoEl.getAttribute('data-src') === src) return;
-        videoEl.pause();
-        videoEl.src = src;
-        videoEl.setAttribute('data-src', src);
-        videoEl.load();
-        videoEl.addEventListener('loadeddata', function handler(){
-          videoEl.removeEventListener('loadeddata', handler);
-          if(inView(sec)){ videoEl.play().catch(()=>{}); }
-          else { videoEl.pause(); }
-        });
+        videoEl.pause(); videoEl.src = src; videoEl.setAttribute('data-src', src); videoEl.load();
+        videoEl.addEventListener('loadeddata', function handler(){ videoEl.removeEventListener('loadeddata', handler); if(inView(sec)) videoEl.play().catch(()=>{}); else videoEl.pause(); });
       }
-
       function setVideoSources(){
         const portrait = MQ_NARROW.matches;
         assignSrc(v1, portrait ? SRC_P1 : SRC_L1, firstSec);
@@ -382,8 +432,7 @@
         videoEl.muted = true;
         const upd = ()=> b.innerHTML = videoEl.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
         b.addEventListener('click', ()=>{ videoEl.muted=!videoEl.muted; upd(); });
-        upd();
-        return {sec, v:videoEl};
+        upd(); return {sec, v:videoEl};
       }
       const V1 = wireVideo(firstSec, v1, 'm1');
       const V2 = wireVideo(secondSec, v2, 'm2');
@@ -396,14 +445,16 @@
         });
       },{threshold:.35});
       [V1.sec, V2.sec].forEach(s=>io.observe(s));
+      [V1, V2].forEach(({sec, v})=>{ if(inView(sec)) v.play().catch(()=>{}); else { v.pause(); v.muted = true; } });
 
-      // 初始化：当前在视口内的自动播放
-      [V1, V2].forEach(({sec, v})=>{
-        if(inView(sec)) v.play().catch(()=>{});
-        else { v.pause(); v.muted = true; }
-      });
-
-      /* 按你的要求：已删除两个模型的动画与热点相关代码 */
+      /* ===== 区块淡入：每个进入视口的区段都标记 data-inview=1 ===== */
+      const fadeObserver = new IntersectionObserver((entries)=>{
+        entries.forEach(ent=>{
+          if(ent.isIntersecting){ ent.target.setAttribute('data-inview','1'); }
+          else { ent.target.setAttribute('data-inview','0'); }
+        });
+      },{threshold:0.25});
+      document.querySelectorAll('[data-section]').forEach(sec=>fadeObserver.observe(sec));
     });
   </script>
 </body>
